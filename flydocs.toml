@@ -1,0 +1,25 @@
+[project]
+name = "flydocs"
+url = "https://aknochow.github.io/flydocs/"
+description = "Static documentation sites with PatternFly from markdown."
+docs_dir = "docs"
+site_dir = "public"
+
+[theme]
+mode = "auto"
+tagline = "Static documentation sites with PatternFly"
+
+[readme]
+enabled = true
+
+[[nav]]
+"Overview" = [
+    { "Introduction" = "index.md" },
+]
+
+[[nav]]
+"Reference" = [
+    { "OKF Frontmatter" = "okf.md" },
+    { "PatternFly" = "patternfly.md" },
+    { "Configuration" = "configuration.md" },
+]
