@@ -40,8 +40,10 @@ def generate_readme(config: Config) -> str:
     parts.append("")
     parts.append("---")
     parts.append("")
-    parts.append(f"*Generated from `{config.docs_dir}/index.md` by "
-                 f"[flydocs](https://github.com/aknochow/flydocs).*")
+    parts.append(
+        f"*Generated from `{config.docs_dir}/index.md` by "
+        f"[flydocs](https://github.com/aknochow/flydocs).*"
+    )
     parts.append("")
 
     return "\n".join(parts)

@@ -53,8 +53,7 @@ class TestLint:
         docs = tmp_path / "docs"
         docs.mkdir()
         (docs / "page.md").write_text(
-            "---\ntype: Guide\ntitle: X\ndescription: Y\n---\n"
-            "[Link](nonexistent.md)\n"
+            "---\ntype: Guide\ntitle: X\ndescription: Y\n---\n[Link](nonexistent.md)\n"
         )
         config = Config(docs_dir=str(docs))
         assert lint(config) == 1

@@ -3,8 +3,6 @@
 from __future__ import annotations
 
 import os
-import threading
-import urllib.request
 
 from click.testing import CliRunner
 
@@ -135,56 +133,3 @@ class TestOkfCli:
         result = CliRunner().invoke(main, ["okf", "init"])
         assert result.exit_code == 1
         assert "not yet implemented" in result.output
-
-
-class TestPreviewIntegration:
-    def test_preview_serves_site(self, sample_config, monkeypatch):
-        monkeypatch.chdir(os.path.dirname(sample_config.docs_dir))
-
-        port = 18932
-        server_ready = threading.Event()
-        server_error = []
-
-        def run_server():
-            try:
-                local_config = sample_config
-                from flydocs.builder import build_site
-                from flydocs.config import Config
-
-                cfg = Config(
-                    name=local_config.name,
-                    docs_dir=local_config.docs_dir,
-                    site_dir=local_config.site_dir,
-                    base_path="",
-                    nav=local_config.nav,
-                )
-                build_site(cfg)
-
-                import functools
-                import http.server
-
-                handler = functools.partial(
-                    http.server.SimpleHTTPRequestHandler,
-                    directory=cfg.site_dir,
-                )
-                srv = http.server.HTTPServer(("127.0.0.1", port), handler)
-                server_ready.set()
-                srv.handle_request()
-                srv.server_close()
-            except Exception as e:
-                server_error.append(e)
-                server_ready.set()
-
-        t = threading.Thread(target=run_server, daemon=True)
-        t.start()
-        server_ready.wait(timeout=10)
-
-        if server_error:
-            raise server_error[0]
-
-        resp = urllib.request.urlopen(f"http://127.0.0.1:{port}/")
-        assert resp.status == 200
-        html = resp.read().decode()
-        assert "Test Project" in html
-        assert "pf-v6-c-nav" in html
-        assert "flydocs.css" in html

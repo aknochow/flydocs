@@ -60,6 +60,16 @@ def sample_config(tmp_docs):
 def sample_badges():
     """Sample badge tuple for testing."""
     return (
-        Badge(id="version", label="v1.0", url="https://example.com/releases", img="https://img.shields.io/badge/v1.0-blue"),
-        Badge(id="docs", label="Docs", url="https://example.com/docs/", img="https://img.shields.io/badge/docs-green"),
+        Badge(
+            id="version",
+            label="v1.0",
+            url="https://example.com/releases",
+            img="https://img.shields.io/badge/v1.0-blue",
+        ),
+        Badge(
+            id="docs",
+            label="Docs",
+            url="https://example.com/docs/",
+            img="https://img.shields.io/badge/docs-green",
+        ),
     )

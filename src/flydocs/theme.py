@@ -66,7 +66,11 @@ def render_page(
         theme_class = resolve_html_classes(mode, palette)
 
     slug = title != config.name
-    tab_title = f"{html_module.escape(title)} · {html_module.escape(config.name)}" if slug else html_module.escape(config.name)
+    tab_title = (
+        f"{html_module.escape(title)} · {html_module.escape(config.name)}"
+        if slug
+        else html_module.escape(config.name)
+    )
 
     favicon_path = "assets/img/favicon.svg"
 

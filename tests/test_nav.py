@@ -31,14 +31,18 @@ class TestLoadNav:
 
 class TestBuildSidebar:
     def test_renders_html(self):
-        nav = [{"title": "Overview", "entries": [{"label": "Home", "path": "", "file": "index.md"}]}]
+        nav = [
+            {"title": "Overview", "entries": [{"label": "Home", "path": "", "file": "index.md"}]}
+        ]
         html = build_sidebar(nav, "index.md")
         assert "pf-v6-c-nav" in html
         assert "pf-m-current" in html
         assert "Home" in html
 
     def test_escapes_html(self):
-        nav = [{"title": "Q&A", "entries": [{"label": "<b>Bold</b>", "path": "qa", "file": "qa.md"}]}]
+        nav = [
+            {"title": "Q&A", "entries": [{"label": "<b>Bold</b>", "path": "qa", "file": "qa.md"}]}
+        ]
         html = build_sidebar(nav, "other.md")
         assert "Q&amp;A" in html
         assert "&lt;b&gt;Bold&lt;/b&gt;" in html

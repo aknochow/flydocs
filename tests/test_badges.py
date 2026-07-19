@@ -37,7 +37,7 @@ class TestBuildBadgeHtml:
         assert "img.shields.io" in html
 
     def test_escapes_values(self):
-        b = Badge(id="x", label='<script>', url="https://x.com", img="https://img.io/v")
+        b = Badge(id="x", label="<script>", url="https://x.com", img="https://img.io/v")
         html = build_badge_html((b,))
         assert "<script>" not in html
         assert "&lt;script&gt;" in html

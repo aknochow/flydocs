@@ -9,3 +9,4 @@ public/
 public-okf/
 .ruff_cache/
 .pytest_cache/
+.coverage

@@ -58,11 +58,7 @@ class TestLoadConfig:
 
     def test_readme_config(self, tmp_path):
         cfg = tmp_path / "flydocs.toml"
-        cfg.write_text(
-            '[project]\nname = "Test"\n'
-            "[readme]\nenabled = true\n"
-            'output = "OUT.md"\n'
-        )
+        cfg.write_text('[project]\nname = "Test"\n[readme]\nenabled = true\noutput = "OUT.md"\n')
         config = load_config(cfg)
         assert config.readme.enabled is True
         assert config.readme.output == "OUT.md"

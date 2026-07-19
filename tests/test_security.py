@@ -22,12 +22,22 @@ class TestXssNavSidebar:
         assert "&lt;script&gt;" in html
 
     def test_entry_label_escaped(self):
-        nav = [{"title": "T", "entries": [{"label": '<img src=x onerror=alert(1)>', "path": "x", "file": "x.md"}]}]
+        nav = [
+            {
+                "title": "T",
+                "entries": [{"label": "<img src=x onerror=alert(1)>", "path": "x", "file": "x.md"}],
+            }
+        ]
         html = build_sidebar(nav, "other.md")
         assert "&lt;img" in html
 
     def test_entry_href_escaped(self):
-        nav = [{"title": "T", "entries": [{"label": "L", "path": '" onclick="alert(1)', "file": "x.md"}]}]
+        nav = [
+            {
+                "title": "T",
+                "entries": [{"label": "L", "path": '" onclick="alert(1)', "file": "x.md"}],
+            }
+        ]
         html = build_sidebar(nav, "other.md")
         assert "&quot;" in html
         assert 'href="&quot;' not in html or '" onclick="' not in html
@@ -35,7 +45,7 @@ class TestXssNavSidebar:
 
 class TestXssBadges:
     def test_badge_label_escaped(self):
-        b = Badge(id="x", label='<script>xss</script>', url="https://x", img="https://img.io/x")
+        b = Badge(id="x", label="<script>xss</script>", url="https://x", img="https://img.io/x")
         html = build_badge_html((b,))
         assert "<script>" not in html
         assert "&lt;script&gt;" in html
@@ -55,13 +65,15 @@ class TestXssBadges:
 
 class TestXssBanner:
     def test_banner_text_escaped(self):
-        config = Config(theme=ThemeConfig(banner=BannerConfig(text='<script>alert(1)</script>')))
+        config = Config(theme=ThemeConfig(banner=BannerConfig(text="<script>alert(1)</script>")))
         html = build_banner_html(config)
         assert "<script>" not in html
         assert "&lt;script&gt;" in html
 
     def test_banner_url_escaped(self):
-        config = Config(theme=ThemeConfig(banner=BannerConfig(text="T", url='" onmouseover="alert(1)')))
+        config = Config(
+            theme=ThemeConfig(banner=BannerConfig(text="T", url='" onmouseover="alert(1)'))
+        )
         html = build_banner_html(config)
         assert "&quot;" in html
         assert '" onmouseover="' not in html
@@ -87,19 +99,19 @@ class TestXssTemplate:
         assert '" onerror="' not in html
 
     def test_tagline_escaped_in_render(self):
-        config = Config(name="T", theme=ThemeConfig(tagline='<img src=x onerror=alert(1)>'))
+        config = Config(name="T", theme=ThemeConfig(tagline="<img src=x onerror=alert(1)>"))
         html = render_page("<p>X</p>", "P", "", "", "", config)
         assert "&lt;img" in html
 
     def test_project_name_escaped_in_render(self):
-        config = Config(name='<script>alert(1)</script>')
+        config = Config(name="<script>alert(1)</script>")
         html = render_page("<p>X</p>", "P", "", "", "", config)
         assert "<script>alert" not in html
         assert "&lt;script&gt;" in html
 
     def test_description_escaped_in_render(self):
         config = Config(name="T")
-        html = render_page("<p>X</p>", "P", '<script>xss</script>', "", "", config)
+        html = render_page("<p>X</p>", "P", "<script>xss</script>", "", "", config)
         assert 'content="&lt;script&gt;' in html
 
 

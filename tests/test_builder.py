@@ -43,7 +43,9 @@ class TestBuildSite:
         monkeypatch.chdir(os.path.dirname(sample_config.docs_dir))
         build_site(sample_config)
         assert os.path.exists(os.path.join(sample_config.site_dir, "index.html"))
-        assert os.path.exists(os.path.join(sample_config.site_dir, "guides", "quickstart", "index.html"))
+        assert os.path.exists(
+            os.path.join(sample_config.site_dir, "guides", "quickstart", "index.html")
+        )
 
     def test_copies_assets(self, sample_config, monkeypatch):
         monkeypatch.chdir(os.path.dirname(sample_config.docs_dir))

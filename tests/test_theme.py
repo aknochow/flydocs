@@ -56,7 +56,9 @@ class TestBuildBannerHtml:
         assert "pf-v6-c-banner" in html
 
     def test_banner_with_url(self):
-        config = Config(theme=ThemeConfig(banner=BannerConfig(text="Click here", url="https://example.com")))
+        config = Config(
+            theme=ThemeConfig(banner=BannerConfig(text="Click here", url="https://example.com"))
+        )
         html = build_banner_html(config)
         assert "https://example.com" in html
         assert "<a href=" in html
