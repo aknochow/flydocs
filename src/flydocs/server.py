@@ -9,8 +9,8 @@ from flydocs.builder import build_site
 from flydocs.config import Config
 
 
-def serve(config: Config, port: int = 8000) -> None:
-    """Build and serve the documentation site locally."""
+def preview(config: Config, port: int = 8000) -> None:
+    """Build and preview the documentation site locally."""
     local_config = Config(
         name=config.name,
         url=config.url,
