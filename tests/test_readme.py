@@ -57,3 +57,34 @@ class TestGenerateReadme:
         content = generate_readme(sample_config)
         assert "](okf.md)" not in content
         assert "example.com" in content or ".md" in content
+
+    def test_missing_index_exits(self, tmp_path):
+        from flydocs.config import Config
+
+        config = Config(docs_dir=str(tmp_path / "empty"))
+        import pytest
+
+        with pytest.raises(SystemExit, match="not found"):
+            generate_readme(config)
+
+    def test_includes_badges(self):
+        from flydocs.config import Badge, Config
+
+        docs = "/tmp/flydocs-test-readme-badges"
+        import os
+
+        os.makedirs(docs, exist_ok=True)
+        with open(os.path.join(docs, "index.md"), "w") as f:
+            f.write("---\ntype: Guide\ntitle: T\ndescription: D\n---\n# T\n")
+        try:
+            config = Config(
+                name="T",
+                docs_dir=docs,
+                badges=(Badge(id="v", label="v1", url="https://x", img="https://i"),),
+            )
+            content = generate_readme(config)
+            assert "[![v1]" in content
+        finally:
+            import shutil
+
+            shutil.rmtree(docs)

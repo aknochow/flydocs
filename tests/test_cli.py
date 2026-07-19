@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import os
 import threading
-import time
 import urllib.request
 
 from click.testing import CliRunner
@@ -141,7 +140,6 @@ class TestOkfCli:
 class TestPreviewIntegration:
     def test_preview_serves_site(self, sample_config, monkeypatch):
         monkeypatch.chdir(os.path.dirname(sample_config.docs_dir))
-        from flydocs.server import preview
 
         port = 18932
         server_ready = threading.Event()
