@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "flydocs"
 dynamic = ["version"]
 description = "Static documentation sites with PatternFly from markdown."
-license = {text = "Apache-2.0"}
+license = "Apache-2.0"
 requires-python = ">=3.10"
 authors = [{ name = "Adam Knochowski", email = "aknochow@redhat.com" }]
 classifiers = [
@@ -14,7 +14,6 @@ classifiers = [
     "Environment :: Console",
     "Topic :: Documentation",
     "Topic :: Software Development :: Documentation",
-    "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -31,7 +30,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=7.0", "pytest-cov", "ruff"]
+dev = ["pytest>=7.0", "pytest-cov", "ruff", "pre-commit"]
 
 [project.scripts]
 flydocs = "flydocs.cli:main"

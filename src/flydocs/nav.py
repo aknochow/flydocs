@@ -51,19 +51,19 @@ def build_sidebar(
         html += f'    <li class="pf-v6-c-nav__item pf-m-expandable{expanded}">\n'
         html += f'      <details{open_attr}>\n'
         html += f'        <summary class="pf-v6-c-nav__link">{esc(section["title"])}\n'
-        html += f'          <span class="pf-v6-c-nav__toggle-icon">▸</span>\n'
-        html += f'        </summary>\n'
-        html += f'        <ul class="pf-v6-c-nav__subnav">\n'
+        html += '          <span class="pf-v6-c-nav__toggle-icon">▸</span>\n'
+        html += '        </summary>\n'
+        html += '        <ul class="pf-v6-c-nav__subnav">\n'
         for entry in section["entries"]:
             href = esc(slug_to_href(entry["path"], base_path))
             active = " pf-m-current" if entry["file"] == current_file else ""
-            html += f'          <li class="pf-v6-c-nav__item">\n'
+            html += '          <li class="pf-v6-c-nav__item">\n'
             html += f'            <a class="pf-v6-c-nav__link{active}" href="{href}">'
             html += f'{esc(entry["label"])}</a>\n'
-            html += f'          </li>\n'
-        html += f'        </ul>\n'
-        html += f'      </details>\n'
-        html += f'    </li>\n'
+            html += '          </li>\n'
+        html += '        </ul>\n'
+        html += '      </details>\n'
+        html += '    </li>\n'
     html += '  </ul>\n'
     html += '</nav>\n'
     return html
