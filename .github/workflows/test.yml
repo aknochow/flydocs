@@ -27,3 +27,34 @@ jobs:
 
       - name: Test
         run: pytest --tb=short -q
+
+  nginx-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install and build
+        run: |
+          pip install -e .
+          flydocs build
+
+      - name: Serve with Nginx and verify
+        run: |
+          docker run -d --name flydocs-nginx -p 8080:80 \
+            -v $PWD/public:/usr/share/nginx/html:ro nginx:alpine
+          sleep 2
+          curl -sf http://localhost:8080/ | grep "flydocs"
+          curl -sf http://localhost:8080/okf/ | grep "OKF"
+          curl -sf http://localhost:8080/configuration/ | grep "Configuration"
+          curl -sf http://localhost:8080/patternfly/ | grep "PatternFly"
+          curl -sf http://localhost:8080/assets/css/flydocs.css | grep "flydocs-masthead"
+          curl -sf http://localhost:8080/assets/js/flydocs.js | grep "initTheme"
+          echo "All Nginx smoke tests passed"
+
+      - name: Cleanup
+        if: always()
+        run: docker rm -f flydocs-nginx || true
