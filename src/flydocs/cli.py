@@ -30,12 +30,12 @@ def build(config_path, clean):
 @main.command()
 @click.option("--port", default=8000, type=int, help="Port to serve on.")
 @click.option("--config", "config_path", default=None, help="Config file path.")
-def serve(port, config_path):
-    """Build and serve the site locally."""
-    from flydocs.server import serve as do_serve
+def preview(port, config_path):
+    """Build and preview the site locally."""
+    from flydocs.server import preview as do_preview
 
     config = load_config(config_path)
-    do_serve(config, port=port)
+    do_preview(config, port=port)
 
 
 @main.command()

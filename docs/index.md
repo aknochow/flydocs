@@ -53,7 +53,7 @@ name = "My Project"
 3. Build and preview:
 
 ```bash
-flydocs serve
+flydocs preview
 ```
 
 Your site is at `http://localhost:8000`.
@@ -78,7 +78,7 @@ See the [OKF Frontmatter](okf.md) reference for the full spec.
 | Command | Description |
 |---------|-------------|
 | `flydocs build` | Build the documentation site |
-| `flydocs serve` | Build and serve locally |
+| `flydocs preview` | Build and preview locally |
 | `flydocs lint` | Validate frontmatter, nav, and links |
 | `flydocs search QUERY` | Search docs by metadata |
 | `flydocs init PATH` | Scaffold a new doc with OKF frontmatter |
