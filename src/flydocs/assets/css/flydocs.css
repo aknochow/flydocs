@@ -230,7 +230,7 @@ body {
   --pagefind-ui-border-width: 1px;
   --pagefind-ui-border-radius: 6px;
   --pagefind-ui-font: inherit;
-  width: 260px;
+  width: 160px;
 }
 
 .flydocs-search .pagefind-ui__form::before {
@@ -250,7 +250,7 @@ body {
 
 .flydocs-search .pagefind-ui__search-clear {
   height: 24px !important;
-  padding: 0 4px !important;
+  padding: 0 8px !important;
   font-size: 0.75rem !important;
   background: none !important;
   border: none !important;
@@ -737,7 +737,4 @@ h4:hover .flydocs-anchor {
     grid-template-columns: auto 1fr auto;
   }
 
-  .flydocs-search {
-    width: 160px;
-  }
 }
