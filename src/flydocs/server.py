@@ -14,6 +14,7 @@ def preview(config: Config, port: int = 8000) -> None:
     local_config = Config(
         name=config.name,
         url=config.url,
+        github_url=config.github_url,
         description=config.description,
         docs_dir=config.docs_dir,
         site_dir=config.site_dir,

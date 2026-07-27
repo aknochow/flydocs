@@ -1,6 +1,7 @@
 [project]
 name = "flydocs"
 url = "https://aknochow.github.io/flydocs/"
+github_url = "https://github.com/aknochow/flydocs"
 description = "Static documentation sites with PatternFly from markdown."
 docs_dir = "docs"
 site_dir = "public"

@@ -67,6 +67,8 @@ def build_page(
     content = rewrite_links(content, md_rel, config.base_path)
     sidebar = build_sidebar(nav, md_rel, config.base_path, config.sidebar)
 
+    doc_type = meta.get("type", "")
+
     html = render_page(
         content=content,
         title=title,
@@ -74,6 +76,7 @@ def build_page(
         sidebar_html=sidebar,
         badges_html=badges_html,
         config=config,
+        doc_type=doc_type,
     )
 
     slug = md_to_slug(md_rel)
@@ -89,6 +92,28 @@ def build_page(
 
     display = "/" if not slug else f"/{slug}/"
     print(f"  + {display}")
+
+
+def _run_pagefind(site_dir: str) -> None:
+    """Run Pagefind to generate search index."""
+    import subprocess
+    import sys
+
+    try:
+        result = subprocess.run(
+            [sys.executable, "-m", "pagefind", "--site", site_dir],
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+        if result.returncode == 0:
+            for line in result.stdout.strip().split("\n"):
+                if line.strip():
+                    print(f"  [search] {line.strip()}")
+        else:
+            print(f"  [search] Warning: Pagefind failed: {result.stderr.strip()}")
+    except FileNotFoundError:
+        print("  [search] Pagefind not found — skipping search index.")
 
 
 def _validate_site_dir(site_dir: str) -> None:
@@ -137,5 +162,7 @@ def build_site(config: Config, clean: bool = False) -> None:
         with open(config.readme.output, "w") as f:
             f.write(readme_content)
         print(f"  + {config.readme.output}")
+
+    _run_pagefind(config.site_dir)
 
     print(f"Build finished ({len(md_files)} pages)")

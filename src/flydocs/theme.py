@@ -56,6 +56,7 @@ def render_page(
     sidebar_html: str,
     badges_html: str,
     config: Config,
+    doc_type: str = "",
 ) -> str:
     """Render a complete HTML page using Jinja2 templates."""
     mode = config.theme.mode
@@ -91,4 +92,7 @@ def render_page(
         tagline=html_module.escape(config.theme.tagline),
         logo=html_module.escape(config.theme.logo),
         favicon_path=favicon_path,
+        github_url=html_module.escape(config.github_url),
+        sidebar_collapsible=config.sidebar.collapsible,
+        doc_type=html_module.escape(doc_type),
     )
