@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-
 import pytest
 
 from flydocs.badges import build_badge_html, expand_inline_badges

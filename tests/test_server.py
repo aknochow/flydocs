@@ -18,7 +18,7 @@ class TestPreview:
         def run_preview():
             try:
                 preview(sample_config, port=port)
-            except Exception as e:
+            except (OSError, SystemExit) as e:
                 error_holder.append(e)
 
         t = threading.Thread(target=run_preview, daemon=True)

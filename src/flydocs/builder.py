@@ -105,6 +105,7 @@ def _run_pagefind(site_dir: str) -> None:
             capture_output=True,
             text=True,
             timeout=60,
+            check=False,
         )
         if result.returncode == 0:
             for line in result.stdout.strip().split("\n"):

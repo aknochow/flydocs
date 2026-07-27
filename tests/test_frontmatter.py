@@ -27,12 +27,12 @@ class TestParseFrontmatter:
 
     def test_colon_in_value(self):
         text = "---\ntitle: Hello: World\n---\nBody"
-        meta, body = parse_frontmatter(text)
+        meta, _body = parse_frontmatter(text)
         assert meta["title"] == "Hello: World"
 
     def test_quoted_value(self):
         text = '---\ntitle: "Quoted Title"\n---\nBody'
-        meta, body = parse_frontmatter(text)
+        meta, _body = parse_frontmatter(text)
         assert meta["title"] == "Quoted Title"
 
     def test_empty_body(self):
@@ -43,7 +43,7 @@ class TestParseFrontmatter:
 
     def test_no_closing_delimiter(self):
         text = "---\ntitle: Broken\nNo closing delimiter"
-        meta, body = parse_frontmatter(text)
+        meta, _body = parse_frontmatter(text)
         assert meta == {}
 
 

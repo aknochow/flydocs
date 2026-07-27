@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import re
 
-
 VALID_TYPES = {"Concept", "Guide", "Reference", "Example"}
 
 _FM_RE = re.compile(r"^---\n(.*?)\n---\n?(.*)", re.DOTALL)
