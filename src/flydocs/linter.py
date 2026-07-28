@@ -18,9 +18,9 @@ def lint(config: Config, strict: bool = False) -> int:
 
     nav_files: set[str] = set()
     for section in config.nav:
-        for _title, items in section.items():
+        for items in section.values():
             for item in items:
-                for _label, path in item.items():
+                for path in item.values():
                     nav_files.add(path)
 
     md_files = collect_md_files(config.docs_dir)

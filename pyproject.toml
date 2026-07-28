@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "flydocs"
 dynamic = ["version"]
 description = "Static documentation sites with PatternFly from markdown."
-license = "Apache-2.0"
+license = {text = "Apache-2.0"}
 requires-python = ">=3.10"
 authors = [{ name = "Adam Knochowski", email = "aknochow@redhat.com" }]
 classifiers = [
@@ -27,6 +27,7 @@ dependencies = [
     "tomli>=2.0;python_version<'3.11'",
     "Jinja2>=3.1",
     "Pygments>=2.15",
+    "pagefind>=1.5,<2.0",
 ]
 
 [project.optional-dependencies]

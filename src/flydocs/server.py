@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import dataclasses
 import functools
 import http.server
 
@@ -11,19 +12,7 @@ from flydocs.config import Config
 
 def preview(config: Config, port: int = 8000) -> None:
     """Build and preview the documentation site locally."""
-    local_config = Config(
-        name=config.name,
-        url=config.url,
-        description=config.description,
-        docs_dir=config.docs_dir,
-        site_dir=config.site_dir,
-        base_path="",
-        theme=config.theme,
-        sidebar=config.sidebar,
-        readme=config.readme,
-        badges=config.badges,
-        nav=config.nav,
-    )
+    local_config = dataclasses.replace(config, base_path="")
 
     build_site(local_config, clean=True)
 

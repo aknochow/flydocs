@@ -99,13 +99,30 @@ class TestRenderPage:
         assert "Test Site" in html
         assert " · " not in html.split("<title>")[1].split("</title>")[0]
 
-    def test_auto_mode_includes_toggle(self):
+    def test_includes_theme_dropdown(self):
         config = Config(name="Test", theme=ThemeConfig(mode="auto"))
         html = render_page("", "T", "", "", "", config)
-        assert "theme-toggle" in html
+        assert "theme-dropdown" in html
+        assert "color-scheme-group" in html
 
-    def test_dark_mode_no_toggle(self):
+    def test_dark_mode_has_class(self):
         config = Config(name="Test", theme=ThemeConfig(mode="dark"))
         html = render_page("", "T", "", "", "", config)
-        assert "theme-toggle" not in html
         assert "pf-v6-theme-dark" in html
+
+    def test_github_url_rendered(self):
+        config = Config(name="Test", github_url="https://github.com/test/repo")
+        html = render_page("", "T", "", "", "", config)
+        assert "github.com/test/repo" in html
+        assert "flydocs-github-link" in html
+
+    def test_sidebar_toggle_rendered(self):
+        config = Config(name="Test")
+        html = render_page("", "T", "", "", "", config)
+        assert "sidebar-toggle" in html
+
+    def test_doc_type_metadata(self):
+        config = Config(name="Test")
+        html = render_page("", "T", "", "", "", config, doc_type="Guide")
+        assert 'content="Guide"' in html
+        assert "data-pagefind-filter" in html

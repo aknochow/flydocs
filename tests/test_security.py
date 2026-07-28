@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-
 import pytest
 
 from flydocs.badges import build_badge_html, expand_inline_badges
@@ -95,7 +94,7 @@ class TestXssTemplate:
     def test_logo_escaped_in_render(self):
         config = Config(name="T", theme=ThemeConfig(logo='" onerror="alert(1)'))
         html = render_page("<p>X</p>", "P", "", "", "", config)
-        assert "&quot;" in html
+        assert "&#34;" in html or "&quot;" in html
         assert '" onerror="' not in html
 
     def test_tagline_escaped_in_render(self):

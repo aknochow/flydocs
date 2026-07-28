@@ -148,7 +148,7 @@ while using PatternFly semantic tokens for all color values.
 | `.flydocs-sidebar` | Sidebar navigation panel |
 | `.flydocs-main` | Main content area |
 | `.flydocs-content` | Content wrapper (also uses `pf-v6-c-content`) |
-| `.flydocs-toggle` | Mobile hamburger menu button |
+| `.flydocs-sidebar-toggle` | Sidebar collapse toggle |
 
 ## What Flydocs Brings Itself
 

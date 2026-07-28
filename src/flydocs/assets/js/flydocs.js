@@ -1,112 +1,169 @@
-(function() {
-  'use strict';
+(function () {
+  "use strict";
 
-  // ── Theme toggle (three-way: light → dark → auto) ──
+  // ── Theme dropdown with System/Light/Dark button group ──
   function initTheme() {
-    var toggle = document.getElementById('theme-toggle');
-    if (!toggle) return;
+    var btn = document.getElementById("theme-btn");
+    var panel = document.getElementById("theme-panel");
+    var group = document.getElementById("color-scheme-group");
+    if (!btn || !panel || !group) return;
 
-    var icons = { light: '☀', dark: '☾', auto: '◑' };
-    var labels = { light: 'Light mode (click for dark)', dark: 'Dark mode (click for auto)', auto: 'Auto mode (click for light)' };
-    var cycle = { light: 'dark', dark: 'auto', auto: 'light' };
-    var palette = document.documentElement.getAttribute('data-palette') || 'default';
-    var paletteClass = palette !== 'default' ? 'flydocs-palette-' + palette : '';
+    var palette =
+      document.documentElement.getAttribute("data-palette") || "default";
+    var paletteClass =
+      palette !== "default" ? "flydocs-palette-" + palette : "";
+    var schemeIcons = { auto: "◑", light: "☀", dark: "☾" };
+    var btnIcon = btn.querySelector("svg");
 
-    function applyTheme(mode) {
+    function applyScheme(scheme) {
       var isDark;
-      if (mode === 'dark') {
+      if (scheme === "dark") {
         isDark = true;
-      } else if (mode === 'light') {
+      } else if (scheme === "light") {
         isDark = false;
       } else {
-        isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
       }
 
       if (isDark) {
-        document.documentElement.classList.add('pf-v6-theme-dark');
-        if (paletteClass) document.documentElement.classList.add(paletteClass);
+        document.documentElement.classList.add("pf-v6-theme-dark");
+        if (paletteClass)
+          document.documentElement.classList.add(paletteClass);
       } else {
-        document.documentElement.classList.remove('pf-v6-theme-dark');
-        if (paletteClass) document.documentElement.classList.remove(paletteClass);
+        document.documentElement.classList.remove("pf-v6-theme-dark");
+        if (paletteClass)
+          document.documentElement.classList.remove(paletteClass);
       }
-      toggle.textContent = icons[mode];
-      toggle.setAttribute('aria-label', labels[mode]);
+
+      var buttons = group.querySelectorAll(".flydocs-btn-group-item");
+      buttons.forEach(function (b) {
+        b.classList.toggle(
+          "flydocs-btn-group-item--active",
+          b.getAttribute("data-scheme") === scheme
+        );
+      });
+
+      if (btnIcon) {
+        btnIcon.style.display = "none";
+      }
+      Array.from(btn.childNodes).forEach(function (n) {
+        if (n.nodeType === 3 && n.textContent.trim()) n.remove();
+      });
+      var iconText = document.createTextNode(schemeIcons[scheme] || "◑");
+      btn.insertBefore(iconText, btn.querySelector(".flydocs-theme-chevron"));
     }
 
-    var saved = localStorage.getItem('flydocs-theme');
-    var current = (saved === 'light' || saved === 'dark' || saved === 'auto') ? saved : 'auto';
-    applyTheme(current);
+    var saved = localStorage.getItem("flydocs-theme");
+    var current =
+      saved === "light" || saved === "dark" || saved === "auto"
+        ? saved
+        : "auto";
+    applyScheme(current);
 
-    toggle.addEventListener('click', function() {
-      current = cycle[current];
-      localStorage.setItem('flydocs-theme', current);
-      applyTheme(current);
+    group.addEventListener("click", function (e) {
+      var target = e.target.closest("[data-scheme]");
+      if (!target) return;
+      current = target.getAttribute("data-scheme");
+      localStorage.setItem("flydocs-theme", current);
+      applyScheme(current);
     });
 
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function() {
-      if (current === 'auto') applyTheme('auto');
+    btn.addEventListener("click", function () {
+      var open = panel.classList.toggle("flydocs-theme-panel--open");
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
     });
+
+    document.addEventListener("click", function (e) {
+      if (!e.target.closest("#theme-dropdown")) {
+        panel.classList.remove("flydocs-theme-panel--open");
+        btn.setAttribute("aria-expanded", "false");
+      }
+    });
+
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", function () {
+        if (current === "auto") applyScheme("auto");
+      });
   }
 
   // ── Copy to clipboard ──
   function initCopyButtons() {
-    document.querySelectorAll('pre').forEach(function(pre) {
-      var btn = document.createElement('button');
-      btn.className = 'copy-btn';
-      btn.textContent = 'Copy';
-      btn.addEventListener('click', function() {
-        var code = pre.querySelector('code');
+    document.querySelectorAll("pre").forEach(function (pre) {
+      var btn = document.createElement("button");
+      btn.className = "copy-btn";
+      btn.textContent = "Copy";
+      btn.addEventListener("click", function () {
+        var code = pre.querySelector("code");
         var text = (code ? code.textContent : pre.textContent).trimEnd();
-        navigator.clipboard.writeText(text).then(function() {
-          btn.textContent = 'Copied!';
-          btn.classList.add('copy-btn--copied');
-          setTimeout(function() { btn.textContent = 'Copy'; btn.classList.remove('copy-btn--copied'); }, 2000);
-        }).catch(function() {
-          btn.textContent = 'Failed';
-          setTimeout(function() { btn.textContent = 'Copy'; }, 2000);
-        });
+        navigator.clipboard
+          .writeText(text)
+          .then(function () {
+            btn.textContent = "Copied!";
+            btn.classList.add("copy-btn--copied");
+            setTimeout(function () {
+              btn.textContent = "Copy";
+              btn.classList.remove("copy-btn--copied");
+            }, 2000);
+          })
+          .catch(function () {
+            btn.textContent = "Failed";
+            setTimeout(function () {
+              btn.textContent = "Copy";
+            }, 2000);
+          });
       });
-      pre.style.position = 'relative';
+      pre.style.position = "relative";
       pre.appendChild(btn);
     });
   }
 
-  // ── Mobile sidebar toggle ──
+  // ── Sidebar toggle (works on all viewports) ──
   function initSidebar() {
-    var toggle = document.getElementById('sidebar-toggle');
-    var sidebar = document.getElementById('sidebar');
-    var backdrop = document.getElementById('backdrop');
+    var toggle = document.getElementById("sidebar-toggle");
+    var sidebar = document.getElementById("sidebar");
+    var backdrop = document.getElementById("backdrop");
     if (!toggle || !sidebar) return;
 
-    function openSidebar() {
-      sidebar.classList.add('flydocs-sidebar--open');
-      if (backdrop) backdrop.classList.add('flydocs-backdrop--open');
+    var isMobile = function () {
+      return window.innerWidth <= 768;
+    };
+
+    var savedCollapsed = localStorage.getItem("flydocs-sidebar-collapsed");
+    if (savedCollapsed === "true" && !isMobile()) {
+      sidebar.classList.add("flydocs-sidebar--collapsed");
     }
 
-    function closeSidebar() {
-      sidebar.classList.remove('flydocs-sidebar--open');
-      if (backdrop) backdrop.classList.remove('flydocs-backdrop--open');
-    }
-
-    toggle.addEventListener('click', function() {
-      if (sidebar.classList.contains('flydocs-sidebar--open')) {
-        closeSidebar();
+    toggle.addEventListener("click", function () {
+      if (isMobile()) {
+        var isOpen = sidebar.classList.toggle("flydocs-sidebar--open");
+        if (backdrop)
+          backdrop.classList.toggle("flydocs-backdrop--open", isOpen);
       } else {
-        openSidebar();
+        var collapsed = sidebar.classList.toggle(
+          "flydocs-sidebar--collapsed"
+        );
+        localStorage.setItem("flydocs-sidebar-collapsed", collapsed);
       }
     });
 
     if (backdrop) {
-      backdrop.addEventListener('click', closeSidebar);
+      backdrop.addEventListener("click", function () {
+        sidebar.classList.remove("flydocs-sidebar--open");
+        backdrop.classList.remove("flydocs-backdrop--open");
+      });
     }
 
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') closeSidebar();
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") {
+        sidebar.classList.remove("flydocs-sidebar--open");
+        if (backdrop) backdrop.classList.remove("flydocs-backdrop--open");
+      }
     });
   }
 
   // ── Init ──
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener("DOMContentLoaded", function () {
     initTheme();
     initCopyButtons();
     initSidebar();

@@ -45,6 +45,7 @@ class Badge:
 @dataclass(frozen=True)
 class SidebarConfig:
     expanded: bool = True
+    collapsible: bool = True
     overrides: dict[str, bool] = field(default_factory=dict)
 
 
@@ -58,6 +59,7 @@ class ReadmeConfig:
 class Config:
     name: str = "Documentation"
     url: str = ""
+    github_url: str = ""
     description: str = ""
     docs_dir: str = "docs"
     site_dir: str = "public"
@@ -67,6 +69,15 @@ class Config:
     readme: ReadmeConfig = field(default_factory=ReadmeConfig)
     badges: tuple[Badge, ...] = ()
     nav: tuple[dict, ...] = ()
+
+
+def _validate_url(url: str) -> str:
+    """Validate a URL is HTTP(S) or empty."""
+    if not url:
+        return ""
+    if url.startswith(("https://", "http://")):
+        return url
+    return ""
 
 
 def find_config(start_dir: str | Path = ".") -> Path | None:
@@ -132,6 +143,7 @@ def load_config(config_path: str | Path | None = None) -> Config:
     sidebar_overrides = sidebar_raw.get("overrides", {})
     sidebar = SidebarConfig(
         expanded=bool(sidebar_raw.get("expanded", True)),
+        collapsible=bool(sidebar_raw.get("collapsible", True)),
         overrides={str(k): bool(v) for k, v in sidebar_overrides.items()},
     )
 
@@ -147,6 +159,7 @@ def load_config(config_path: str | Path | None = None) -> Config:
     return Config(
         name=str(project.get("name", "Documentation")),
         url=str(project.get("url", "")),
+        github_url=_validate_url(str(project.get("github_url", ""))),
         description=str(project.get("description", "")),
         docs_dir=str(project.get("docs_dir", "docs")),
         site_dir=str(project.get("site_dir", "public")),
