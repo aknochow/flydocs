@@ -115,6 +115,8 @@ def _run_pagefind(site_dir: str) -> None:
             print(f"  [search] Warning: Pagefind failed: {result.stderr.strip()}")
     except FileNotFoundError:
         print("  [search] Pagefind not found — skipping search index.")
+    except subprocess.TimeoutExpired:
+        print("  [search] Warning: Pagefind timed out after 60s — skipping search index.")
 
 
 def _validate_site_dir(site_dir: str) -> None:

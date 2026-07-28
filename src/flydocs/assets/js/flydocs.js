@@ -46,7 +46,7 @@
       if (btnIcon) {
         btnIcon.style.display = "none";
       }
-      btn.childNodes.forEach(function (n) {
+      Array.from(btn.childNodes).forEach(function (n) {
         if (n.nodeType === 3 && n.textContent.trim()) n.remove();
       });
       var iconText = document.createTextNode(schemeIcons[scheme] || "◑");

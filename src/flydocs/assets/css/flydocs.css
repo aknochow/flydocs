@@ -316,6 +316,7 @@ body {
   overflow-y: auto;
   background-color: var(--pf-t--global--background--color--primary--default);
   border-right: 1px solid var(--pf-t--global--border--color--default);
+  padding: 1rem 0.75rem;
   transition: width 0.2s ease, min-width 0.2s ease;
 }
 
