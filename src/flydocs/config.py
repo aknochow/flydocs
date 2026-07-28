@@ -71,6 +71,15 @@ class Config:
     nav: tuple[dict, ...] = ()
 
 
+def _validate_url(url: str) -> str:
+    """Validate a URL is HTTP(S) or empty."""
+    if not url:
+        return ""
+    if url.startswith(("https://", "http://")):
+        return url
+    return ""
+
+
 def find_config(start_dir: str | Path = ".") -> Path | None:
     """Find the config file in the given directory."""
     start = Path(start_dir)
@@ -150,7 +159,7 @@ def load_config(config_path: str | Path | None = None) -> Config:
     return Config(
         name=str(project.get("name", "Documentation")),
         url=str(project.get("url", "")),
-        github_url=str(project.get("github_url", "")),
+        github_url=_validate_url(str(project.get("github_url", ""))),
         description=str(project.get("description", "")),
         docs_dir=str(project.get("docs_dir", "docs")),
         site_dir=str(project.get("site_dir", "public")),
