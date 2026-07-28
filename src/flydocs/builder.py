@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import os
 import shutil
+import subprocess
+import sys
 from importlib import resources
 from pathlib import Path
 
@@ -94,11 +96,8 @@ def build_page(
     print(f"  + {display}")
 
 
-def _run_pagefind(site_dir: str) -> None:
-    """Run Pagefind to generate search index."""
-    import subprocess
-    import sys
-
+def _run_pagefind(site_dir: str) -> bool:
+    """Run Pagefind to generate search index. Returns True if successful."""
     try:
         result = subprocess.run(
             [sys.executable, "-m", "pagefind", "--site", site_dir],
@@ -111,12 +110,14 @@ def _run_pagefind(site_dir: str) -> None:
             for line in result.stdout.strip().split("\n"):
                 if line.strip():
                     print(f"  [search] {line.strip()}")
-        else:
-            print(f"  [search] Warning: Pagefind failed: {result.stderr.strip()}")
+            return True
+        msg = result.stderr.strip() or "(no error output)"
+        print(f"  [search] Warning: Pagefind failed: {msg}")
     except FileNotFoundError:
         print("  [search] Pagefind not found — skipping search index.")
     except subprocess.TimeoutExpired:
         print("  [search] Warning: Pagefind timed out after 60s — skipping search index.")
+    return False
 
 
 def _validate_site_dir(site_dir: str) -> None:

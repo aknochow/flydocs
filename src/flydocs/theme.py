@@ -95,4 +95,15 @@ def render_page(
         github_url=html_module.escape(config.github_url),
         sidebar_collapsible=config.sidebar.collapsible,
         doc_type=html_module.escape(doc_type),
+        search_enabled=_pagefind_available(),
     )
+
+
+def _pagefind_available() -> bool:
+    """Check if pagefind is importable."""
+    try:
+        import importlib.util
+
+        return importlib.util.find_spec("pagefind") is not None
+    except (ImportError, ModuleNotFoundError):
+        return False
