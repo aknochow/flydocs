@@ -222,3 +222,21 @@ data catalog types. No `pip install` of Google's package is needed.
 The shared fields (`type`, `tags`) follow the same semantics. The
 `title`, `description`, and `weight` fields are flydocs-specific
 extensions to the OKF pattern.
+
+## Inspiration
+
+FlyDocs OKF is also inspired by Andrej Karpathy's
+[LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)
+pattern — the idea that documentation should exist in three layers:
+
+| Layer | Purpose |
+|-------|---------|
+| Source | The code — source of truth |
+| Wiki | Human and LLM-readable documentation (markdown + frontmatter) |
+| Schema | AI agent context and search index |
+
+OKF frontmatter bridges the Wiki and Schema layers: the markdown
+body is the human-readable content, while the frontmatter metadata
+provides structured data for agent consumption, search indexing,
+and automated navigation — without requiring a separate schema
+file.
