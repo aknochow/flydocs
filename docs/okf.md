@@ -13,7 +13,7 @@ OKF (Open Knowledge Format) is a YAML frontmatter convention for markdown
 documentation. It enables auto-generated navigation, search indexing,
 linting, and type-based styling in flydocs sites.
 
-OKF is **optional**. Flydocs builds PatternFly documentation sites from
+OKF is **optional**. FlyDocs builds PatternFly documentation sites from
 plain markdown with no frontmatter required. OKF adds structure when
 you want it.
 
@@ -47,7 +47,7 @@ tags: [quickstart, install]
 | `tags` | list | `[]` | Keywords for search filtering and grouping. |
 | `weight` | integer | `0` | Sort order within a nav section. Lower values appear first. |
 
-Projects may add custom fields beyond these five. Flydocs ignores
+Projects may add custom fields beyond these five. FlyDocs ignores
 fields it does not recognize.
 
 ## Document Types
@@ -135,16 +135,16 @@ docs/
   examples/
 ```
 
-This is a convention, not a requirement. Flydocs reads the `type` field
+This is a convention, not a requirement. FlyDocs reads the `type` field
 from frontmatter regardless of file location. A flat `docs/` directory
 with explicit `type` fields works the same way.
 
 When both are present, the frontmatter `type` field is authoritative.
 A file at `docs/guides/setup.md` with `type: Reference` is a Reference.
 
-## Flydocs Without OKF
+## FlyDocs Without OKF
 
-Flydocs does not require OKF frontmatter. Plain markdown files produce
+FlyDocs does not require OKF frontmatter. Plain markdown files produce
 a PatternFly documentation site with:
 
 - Navigation derived from file and directory names
@@ -156,7 +156,7 @@ want a PatternFly site without restructuring their content.
 
 ## Migrating to OKF
 
-Flydocs provides tooling to adopt OKF incrementally:
+FlyDocs provides tooling to adopt OKF incrementally:
 
 ### Preview
 
@@ -208,15 +208,15 @@ files with YAML frontmatter. Google's reference implementation is a
 BigQuery metadata catalog tool — it extracts dataset schemas into
 OKF-formatted markdown using a Python agent and Gemini enrichment.
 
-Flydocs adopts the **format concept** from Google's OKF — markdown
+FlyDocs adopts the **format concept** from Google's OKF — markdown
 files with a `---` YAML frontmatter block containing a `type` field —
 but uses its own documentation-oriented type system:
 
-| Google OKF types | Flydocs OKF types |
+| Google OKF types | FlyDocs OKF types |
 |-----------------|-------------------|
 | datasets, tables, references | Concept, Guide, Reference, Example |
 
-Flydocs does not use Google's tooling, their BigQuery agent, or their
+FlyDocs does not use Google's tooling, their BigQuery agent, or their
 data catalog types. No `pip install` of Google's package is needed.
 
 The shared fields (`type`, `tags`) follow the same semantics. The

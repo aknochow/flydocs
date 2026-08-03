@@ -9,7 +9,7 @@ tags: [config, toml, settings, theme, badges, nav]
 
 [TOC]
 
-Flydocs is configured via `flydocs.toml` in the project root. All
+FlyDocs is configured via `flydocs.toml` in the project root. All
 fields are optional except `[project] name`. If no config file is
 found, flydocs uses sensible defaults.
 
@@ -41,7 +41,7 @@ base_path = "/my-project"
 
 ## `[theme]`
 
-Visual appearance settings. Flydocs follows PatternFly design
+Visual appearance settings. FlyDocs follows PatternFly design
 standards — colors are not user-configurable. The theme section
 controls mode, branding, and optional UI elements.
 
@@ -60,7 +60,7 @@ google_fonts = true
 | `mode` | string | `"auto"` | Theme mode: `"dark"`, `"light"`, or `"auto"`. Auto detects system preference and shows a toggle. |
 | `palette` | string | `"flydocs-dark"` | Dark mode color palette: `"default"` (stock PatternFly) or `"flydocs-dark"` (deeper dark theme). |
 | `logo` | string | `""` | Path to a logo image (SVG or PNG) displayed in the masthead. |
-| `favicon` | string | `""` | Path to a favicon. Flydocs ships a default if not set. |
+| `favicon` | string | `""` | Path to a favicon. FlyDocs ships a default if not set. |
 | `tagline` | string | `""` | Short text shown next to the project name in the masthead. |
 | `google_fonts` | bool | `true` | Load Red Hat Text and Red Hat Mono from Google Fonts CDN. Set to `false` for air-gapped or privacy-conscious deployments. |
 

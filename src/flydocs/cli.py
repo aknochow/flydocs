@@ -1,4 +1,4 @@
-"""Flydocs CLI — static documentation sites with PatternFly."""
+"""FlyDocs CLI — static documentation sites with PatternFly."""
 
 from __future__ import annotations
 

@@ -9,13 +9,13 @@ tags: [patternfly, theme, css, design-system]
 
 [TOC]
 
-Flydocs generates static HTML sites styled with PatternFly,
+FlyDocs generates static HTML sites styled with PatternFly,
 Red Hat's open source design system. This document captures which
 PatternFly features flydocs uses, how, and why.
 
 ## CSS-Only Approach
 
-Flydocs uses PatternFly as pure CSS — no React, no JavaScript
+FlyDocs uses PatternFly as pure CSS — no React, no JavaScript
 framework. The `@patternfly/patternfly` npm package provides the
 core CSS, which flydocs vendors as `patternfly-base.css` shipped
 with the Python package.
@@ -25,11 +25,11 @@ Two CSS files are loaded per page:
 | File | Source | Purpose |
 |------|--------|---------|
 | `patternfly-base.css` | Vendored from `@patternfly/patternfly` | Reset, tokens, component styles |
-| `flydocs.css` | Flydocs package | Layout, sidebar, content typography |
+| `flydocs.css` | FlyDocs package | Layout, sidebar, content typography |
 
 ## Semantic Tokens
 
-Flydocs uses PatternFly semantic tokens for all color values.
+FlyDocs uses PatternFly semantic tokens for all color values.
 Semantic tokens auto-adapt between light and dark themes — no
 separate dark stylesheet needed.
 
@@ -62,7 +62,7 @@ PatternFly dark mode is activated by adding `pf-v6-theme-dark` to
 the `<html>` element. All semantic tokens resolve to dark values
 when this class is present.
 
-Flydocs supports three modes via `[theme] mode` in `flydocs.toml`:
+FlyDocs supports three modes via `[theme] mode` in `flydocs.toml`:
 
 | Mode | Behavior |
 |------|----------|
@@ -75,7 +75,7 @@ separate stylesheet is needed.
 
 ## Palettes
 
-Flydocs ships a custom dark palette (`flydocs-dark`) with deeper
+FlyDocs ships a custom dark palette (`flydocs-dark`) with deeper
 colors than stock PatternFly. This is the default palette.
 
 | Palette | Description |
@@ -132,9 +132,9 @@ Optional announcement banner at the top of every page:
 Supports PatternFly banner colors: `blue`, `red`, `green`, `gold`.
 Configured via `[theme.banner]` in `flydocs.toml`.
 
-## Flydocs Layout Classes
+## FlyDocs Layout Classes
 
-Flydocs uses its own `flydocs-*` prefixed classes for the page
+FlyDocs uses its own `flydocs-*` prefixed classes for the page
 layout. This avoids collision with PatternFly component classes
 while using PatternFly semantic tokens for all color values.
 
@@ -150,12 +150,12 @@ while using PatternFly semantic tokens for all color values.
 | `.flydocs-content` | Content wrapper (also uses `pf-v6-c-content`) |
 | `.flydocs-sidebar-toggle` | Sidebar collapse toggle |
 
-## What Flydocs Brings Itself
+## What FlyDocs Brings Itself
 
 PatternFly provides the design system but not everything a docs
 site needs:
 
-| Feature | PatternFly provides | Flydocs provides |
+| Feature | PatternFly provides | FlyDocs provides |
 |---------|-------------------|-----------------|
 | Colors and tokens | Yes | — |
 | Dark/light themes | Toggle mechanism | JS for auto mode + toggle button |

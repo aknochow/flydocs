@@ -1,4 +1,4 @@
-"""Flydocs — static documentation sites with PatternFly from markdown."""
+"""FlyDocs — static documentation sites with PatternFly from markdown."""
 
 from __future__ import annotations
 
