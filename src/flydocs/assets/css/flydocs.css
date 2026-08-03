@@ -31,7 +31,6 @@ body {
   right: 0;
   height: 52px;
   max-height: 52px;
-  overflow: hidden;
   background-color: var(--pf-t--global--background--color--secondary--default);
   border-bottom: 1px solid var(--pf-t--global--border--color--default);
   display: grid;
@@ -158,9 +157,9 @@ body {
 
 .flydocs-theme-panel {
   display: none;
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
+  position: fixed;
+  top: 56px;
+  right: 1.5rem;
   background-color: var(--pf-t--global--background--color--secondary--default);
   border: 1px solid var(--pf-t--global--border--color--default);
   border-radius: 8px;
