@@ -39,7 +39,7 @@ def parse_frontmatter(text: str) -> tuple[dict[str, Any], str]:
 def extract_title(meta: dict[str, Any], body: str, fallback: str = "Documentation") -> str:
     """Extract page title from frontmatter or first heading."""
     if "title" in meta:
-        return meta["title"]
+        return str(meta["title"])
     match = re.match(r"^#\s+(.+)", body, re.MULTILINE)
     if match:
         return match.group(1)
@@ -59,7 +59,7 @@ def normalize_tags(meta: dict[str, Any]) -> list[str]:
 def get_status(meta: dict[str, Any]) -> str:
     """Return the OKF 'status' field, defaulting to 'stable' when absent."""
     status = meta.get("status")
-    if not status:
+    if status is None:
         return DEFAULT_STATUS
     return str(status)
 

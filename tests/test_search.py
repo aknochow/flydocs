@@ -24,6 +24,19 @@ class TestSearch:
         output = capsys.readouterr().out
         assert "Something Else" in output
 
+    def test_non_string_title_does_not_crash(self, tmp_path, capsys):
+        # An unquoted numeric title (e.g. `title: 2024`) parses as a YAML
+        # int, not a string — search must not crash calling .lower() on it.
+        docs = tmp_path / "docs"
+        docs.mkdir()
+        (docs / "page.md").write_text(
+            "---\ntype: Guide\ntitle: 2024\ndescription: A year, not a string.\n---\n\n# 2024\n"
+        )
+        config = Config(docs_dir=str(docs))
+        search("2024", config)
+        output = capsys.readouterr().out
+        assert "2024" in output
+
     def test_finds_by_title(self, sample_config, capsys):
         search("Quickstart", sample_config)
         output = capsys.readouterr().out

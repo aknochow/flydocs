@@ -97,6 +97,11 @@ class TestExtractTitle:
     def test_custom_fallback(self):
         assert extract_title({}, "No heading", fallback="Custom") == "Custom"
 
+    def test_non_string_title_coerced_to_str(self):
+        # An unquoted numeric-looking title (e.g. `title: 2024`) parses as a
+        # YAML int, not a string; extract_title's -> str contract must hold.
+        assert extract_title({"title": 2024}, "# Heading") == "2024"
+
 
 class TestValidTypes:
     def test_expected_types(self):
@@ -120,6 +125,13 @@ class TestGetStatus:
 
     def test_explicit_status(self):
         assert get_status({"status": "draft"}) == "draft"
+
+    def test_falsy_status_not_treated_as_absent(self):
+        # status: false / status: 0 are present-but-invalid values, not
+        # "field is absent" — they must flow through to the linter's
+        # VALID_STATUSES check rather than silently becoming "stable".
+        assert get_status({"status": False}) == "False"
+        assert get_status({"status": 0}) == "0"
 
     def test_valid_statuses(self):
         assert VALID_STATUSES == {"draft", "stable", "deprecated"}

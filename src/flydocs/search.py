@@ -23,8 +23,8 @@ def search(query: str, config: Config) -> None:
         if not meta:
             continue
 
-        title = meta.get("title", "")
-        description = meta.get("description", "")
+        title = str(meta.get("title", ""))
+        description = str(meta.get("description", ""))
         tags_str = ", ".join(normalize_tags(meta))
         score = 0
 
