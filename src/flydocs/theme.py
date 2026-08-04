@@ -60,7 +60,7 @@ def build_status_badge_html(status: str) -> str:
     """Build a status label for draft/deprecated docs. Empty for stable/unset."""
     if status not in ("draft", "deprecated"):
         return ""
-    color = _STATUS_STYLE.get(status, "info")
+    color = _STATUS_STYLE[status]
     label = html_module.escape(status)
     return (
         f'<span class="pf-v6-c-label pf-m-{color} '

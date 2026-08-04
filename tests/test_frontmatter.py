@@ -56,6 +56,21 @@ class TestParseFrontmatter:
         assert meta == {}
         assert body == text
 
+    def test_invalid_yaml_logs_a_warning(self, caplog):
+        # Silent frontmatter loss is a real behavior change from the old
+        # hand-rolled parser — a warning gives users a diagnostic clue.
+        text = "---\ntitle: Hello: World\n---\nBody"
+        with caplog.at_level("WARNING"):
+            parse_frontmatter(text)
+        assert any("Invalid YAML frontmatter" in r.message for r in caplog.records)
+
+    def test_non_mapping_frontmatter_logs_a_warning(self, caplog):
+        text = "---\n- just\n- a\n- list\n---\nBody"
+        with caplog.at_level("WARNING"):
+            meta, _body = parse_frontmatter(text)
+        assert meta == {}
+        assert any("not a YAML mapping" in r.message for r in caplog.records)
+
     def test_quoted_value(self):
         text = '---\ntitle: "Quoted Title"\n---\nBody'
         meta, _body = parse_frontmatter(text)

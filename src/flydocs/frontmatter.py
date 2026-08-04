@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import logging
 import re
 from datetime import date, datetime, timezone
 from typing import Any
 
 import yaml
+
+logger = logging.getLogger(__name__)
 
 VALID_TYPES = {"Concept", "Guide", "Reference", "Example"}
 VALID_STATUSES = {"draft", "stable", "deprecated"}
@@ -29,9 +32,11 @@ def parse_frontmatter(text: str) -> tuple[dict[str, Any], str]:
     body = m.group(2).strip()
     try:
         meta = yaml.safe_load(fm_text)
-    except yaml.YAMLError:
+    except yaml.YAMLError as e:
+        logger.warning("Invalid YAML frontmatter, treating as plain text: %s", e)
         return {}, text
     if not isinstance(meta, dict):
+        logger.warning("Frontmatter block is not a YAML mapping, treating as plain text")
         return {}, text
     return meta, body
 
