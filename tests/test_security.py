@@ -174,17 +174,41 @@ class TestFrontmatterInjection:
         assert meta["title"] == "A --- B --- C"
         assert body == "Body"
 
-    def test_yaml_anchor_not_executed(self):
-        text = "---\ntitle: *anchor\nref: &anchor value\n---\nBody"
+    def test_yaml_anchor_resolves_to_plain_value(self):
+        # Anchors/aliases are a normal YAML feature; safe_load must resolve
+        # them to plain scalars only, never to arbitrary Python objects.
+        text = "---\nref: &anchor safe-value\ntitle: *anchor\n---\nBody"
         meta, body = parse_frontmatter(text)
-        assert "anchor" in meta.get("title", "")
+        assert meta["title"] == "safe-value"
+        assert isinstance(meta["title"], str)
         assert body == "Body"
 
-    def test_indented_lines_parsed_as_keys(self):
+    def test_yaml_forward_referenced_alias_degrades_safely(self):
+        # An alias referenced before its anchor is defined is invalid YAML.
+        # safe_load raises rather than silently resolving to something
+        # unexpected, and parse_frontmatter degrades to empty metadata —
+        # same fail-safe behavior as any other malformed frontmatter block.
+        text = "---\ntitle: *anchor\nref: &anchor value\n---\nBody"
+        meta, body = parse_frontmatter(text)
+        assert meta == {}
+        assert body == text
+
+    def test_python_object_tag_not_instantiated(self):
+        # yaml.safe_load must be used, never the full loader — otherwise a
+        # frontmatter block could construct arbitrary Python objects (RCE).
+        text = "---\ntitle: !!python/object/apply:builtins.list [[1, 2, 3]]\n---\nBody"
+        meta, body = parse_frontmatter(text)
+        assert meta == {}
+        assert body == text
+
+    def test_malformed_indentation_degrades_safely(self):
+        # An improperly indented line after a top-level scalar is invalid
+        # YAML; safe_load raises and parse_frontmatter degrades to empty
+        # metadata rather than silently flattening it into extra keys.
         text = "---\ntitle: line1\n  extra_key: extra_value\n---\nBody"
         meta, body = parse_frontmatter(text)
-        assert meta["title"] == "line1"
-        assert body == "Body"
+        assert meta == {}
+        assert body == text
 
 
 class TestInlineBadgeInjection:

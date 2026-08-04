@@ -3,6 +3,10 @@ type: Reference
 title: Configuration
 description: Complete reference for the flydocs.toml configuration file.
 tags: [config, toml, settings, theme, badges, nav]
+status: stable
+generated:
+  by: human:aknochow
+  at: 2026-08-03T00:00:00Z
 ---
 
 # Configuration

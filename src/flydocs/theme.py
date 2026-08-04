@@ -53,6 +53,51 @@ def build_banner_html(config: Config) -> str:
     return f'<div class="pf-v6-c-banner {color_class} pf-m-sticky flydocs-banner">{text}</div>'
 
 
+_STATUS_STYLE = {"draft": "warning", "deprecated": "danger"}
+
+
+def build_status_badge_html(status: str) -> str:
+    """Build a status label for draft/deprecated docs. Empty for stable/unset."""
+    if status not in ("draft", "deprecated"):
+        return ""
+    color = _STATUS_STYLE.get(status, "info")
+    label = html_module.escape(status)
+    return (
+        f'<span class="pf-v6-c-label pf-m-{color} '
+        f'flydocs-status-label flydocs-status-{color}">{label}</span>'
+    )
+
+
+def build_deprecated_notice_html(status: str) -> str:
+    """Build a deprecation notice banner when status is 'deprecated'."""
+    if status != "deprecated":
+        return ""
+    return (
+        '<div class="pf-v6-c-alert pf-m-danger flydocs-deprecated-notice">'
+        "This page is <strong>deprecated</strong> and may be outdated or superseded."
+        "</div>"
+    )
+
+
+def build_stale_notice_html(stale_after: str) -> str:
+    """Build a staleness warning banner when a stale_after date is provided."""
+    if not stale_after:
+        return ""
+    date_str = html_module.escape(stale_after)
+    return (
+        '<div class="pf-v6-c-alert pf-m-warning flydocs-stale-notice">'
+        f"This content may be stale — last reviewed before {date_str}."
+        "</div>"
+    )
+
+
+def build_footer_meta_html(generated_at: str) -> str:
+    """Build a plain-text 'last updated' footer segment."""
+    if not generated_at:
+        return ""
+    return f"Last updated {html_module.escape(generated_at)}"
+
+
 def render_page(
     content: str,
     title: str,
@@ -61,6 +106,9 @@ def render_page(
     badges_html: str,
     config: Config,
     doc_type: str = "",
+    status: str = "",
+    stale_after: str = "",
+    generated_at: str = "",
 ) -> str:
     """Render a complete HTML page using Jinja2 templates."""
     mode = config.theme.mode
@@ -96,6 +144,10 @@ def render_page(
         sidebar_collapsible=config.sidebar.collapsible,
         doc_type=doc_type,
         search_enabled=_pagefind_available(),
+        status_badge_html=Markup(build_status_badge_html(status)),
+        deprecated_notice_html=Markup(build_deprecated_notice_html(status)),
+        stale_notice_html=Markup(build_stale_notice_html(stale_after)),
+        footer_meta_html=Markup(build_footer_meta_html(generated_at)),
     )
 
 

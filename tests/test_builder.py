@@ -7,6 +7,7 @@ import os
 import pytest
 
 from flydocs.builder import _validate_site_dir, build_site, collect_md_files
+from flydocs.config import Config
 
 
 class TestCollectMdFiles:
@@ -70,3 +71,33 @@ class TestBuildSite:
         assert "Test Project" in html
         assert "pf-v6-c-nav" in html
         assert "flydocs.css" in html
+
+    def test_okf_v2_indicators_rendered(self, tmp_path, monkeypatch):
+        docs = tmp_path / "docs"
+        docs.mkdir()
+        (docs / "index.md").write_text(
+            "---\n"
+            "type: Guide\n"
+            "title: Draft Page\n"
+            "description: A draft page.\n"
+            "status: draft\n"
+            "stale_after: 2020-01-01\n"
+            "generated:\n"
+            "  by: human:aknochow\n"
+            "  at: 2026-01-01T00:00:00\n"
+            "---\n\n"
+            "# Draft Page\n"
+        )
+        config = Config(
+            name="Draft Project",
+            docs_dir=str(docs),
+            site_dir=str(tmp_path / "public"),
+        )
+        monkeypatch.chdir(tmp_path)
+        build_site(config)
+        with open(os.path.join(config.site_dir, "index.html")) as f:
+            html = f.read()
+        assert "flydocs-status-label" in html
+        assert ">draft<" in html
+        assert "flydocs-stale-notice" in html
+        assert "Last updated" in html

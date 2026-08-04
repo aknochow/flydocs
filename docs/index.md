@@ -3,6 +3,10 @@ type: Guide
 title: FlyDocs
 description: Static documentation sites with PatternFly from markdown.
 tags: [flydocs, overview, install, getting-started]
+status: stable
+generated:
+  by: human:aknochow
+  at: 2026-08-03T00:00:00Z
 ---
 
 # FlyDocs
@@ -70,6 +74,10 @@ description: Get up and running in 5 minutes.
 tags: [quickstart, install]
 ---
 ```
+
+OKF v0.2 also adds optional `status`, `stale_after`, `generated`,
+`verified`, and `sources` fields for lifecycle and provenance tracking,
+aligned with [Google's OKF v0.2 spec](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md).
 
 See the [OKF Frontmatter](okf.md) reference for the full spec.
 

@@ -2,10 +2,28 @@
 
 from __future__ import annotations
 
+from flydocs.config import Config
 from flydocs.search import search
 
 
 class TestSearch:
+    def test_finds_by_tag_only(self, tmp_path, capsys):
+        docs = tmp_path / "docs"
+        docs.mkdir()
+        (docs / "page.md").write_text(
+            "---\n"
+            "type: Guide\n"
+            "title: Something Else\n"
+            "description: Nothing related here.\n"
+            "tags: [uniquetagword]\n"
+            "---\n\n"
+            "# Something Else\n"
+        )
+        config = Config(docs_dir=str(docs))
+        search("uniquetagword", config)
+        output = capsys.readouterr().out
+        assert "Something Else" in output
+
     def test_finds_by_title(self, sample_config, capsys):
         search("Quickstart", sample_config)
         output = capsys.readouterr().out

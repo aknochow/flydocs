@@ -64,6 +64,10 @@ tags: [quickstart, install]
 ---
 ```
 
+OKF v0.2 also adds optional `status`, `stale_after`, `generated`,
+`verified`, and `sources` fields for lifecycle and provenance tracking,
+aligned with [Google's OKF v0.2 spec](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md).
+
 See the [OKF Frontmatter](https://aknochow.github.io/flydocs/okf/) reference for the full spec.
 
 ## Commands
