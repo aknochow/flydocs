@@ -14,7 +14,6 @@ import markdown
 from flydocs.badges import build_badge_html, expand_inline_badges
 from flydocs.config import Config
 from flydocs.frontmatter import (
-    DEFAULT_STATUS,
     extract_title,
     get_generated,
     get_stale_after,
@@ -80,7 +79,6 @@ def build_page(
     doc_type = meta.get("type", "")
 
     status = get_status(meta)
-    status_display = "" if status == DEFAULT_STATUS else status
 
     stale_after = get_stale_after(meta)
     stale_display = stale_after.isoformat() if stale_after and is_stale(meta) else ""
@@ -95,7 +93,7 @@ def build_page(
         badges_html=badges_html,
         config=config,
         doc_type=doc_type,
-        status=status_display,
+        status=status,
         stale_after=stale_display,
         generated_at=generated_at,
     )
