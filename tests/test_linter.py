@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from datetime import date
+
 from flydocs.config import Config
 from flydocs.linter import lint
 
@@ -57,3 +59,108 @@ class TestLint:
         )
         config = Config(docs_dir=str(docs))
         assert lint(config) == 1
+
+    def test_warns_invalid_status(self, tmp_path):
+        docs = tmp_path / "docs"
+        docs.mkdir()
+        (docs / "page.md").write_text(
+            "---\ntype: Guide\ntitle: X\ndescription: Y\nstatus: archived\n---\n# X\n"
+        )
+        config = Config(docs_dir=str(docs))
+        assert lint(config) == 0
+        assert lint(config, strict=True) == 1
+
+    def test_ok_draft_status_is_valid(self, tmp_path):
+        docs = tmp_path / "docs"
+        docs.mkdir()
+        (docs / "page.md").write_text(
+            "---\ntype: Guide\ntitle: X\ndescription: Y\nstatus: draft\n---\n# X\n"
+        )
+        config = Config(docs_dir=str(docs))
+        assert lint(config, strict=True) == 0
+
+    def test_warns_stale_doc(self, tmp_path):
+        docs = tmp_path / "docs"
+        docs.mkdir()
+        (docs / "page.md").write_text(
+            "---\ntype: Guide\ntitle: X\ndescription: Y\nstale_after: 2020-01-01\n---\n# X\n"
+        )
+        config = Config(docs_dir=str(docs))
+        assert lint(config, today=date(2026, 1, 1)) == 0
+        assert lint(config, strict=True, today=date(2026, 1, 1)) == 1
+
+    def test_stale_after_future_does_not_warn(self, tmp_path):
+        docs = tmp_path / "docs"
+        docs.mkdir()
+        (docs / "page.md").write_text(
+            "---\ntype: Guide\ntitle: X\ndescription: Y\nstale_after: 2099-01-01\n---\n# X\n"
+        )
+        config = Config(docs_dir=str(docs))
+        assert lint(config, strict=True, today=date(2026, 1, 1)) == 0
+
+    def test_warns_malformed_stale_after_date(self, tmp_path):
+        docs = tmp_path / "docs"
+        docs.mkdir()
+        (docs / "page.md").write_text(
+            "---\ntype: Guide\ntitle: X\ndescription: Y\nstale_after: not-a-date\n---\n# X\n"
+        )
+        config = Config(docs_dir=str(docs))
+        assert lint(config, strict=True) == 1
+
+    def test_warns_missing_generated_by(self, tmp_path):
+        docs = tmp_path / "docs"
+        docs.mkdir()
+        (docs / "page.md").write_text(
+            "---\ntype: Guide\ntitle: X\ndescription: Y\ngenerated:\n  at: 2026-01-01\n---\n# X\n"
+        )
+        config = Config(docs_dir=str(docs))
+        assert lint(config, strict=True) == 1
+
+    def test_ok_generated_with_by(self, tmp_path):
+        docs = tmp_path / "docs"
+        docs.mkdir()
+        (docs / "page.md").write_text(
+            "---\ntype: Guide\ntitle: X\ndescription: Y\n"
+            "generated:\n  by: human:x\n  at: 2026-01-01\n---\n# X\n"
+        )
+        config = Config(docs_dir=str(docs))
+        assert lint(config, strict=True) == 0
+
+    def test_warns_verified_entry_missing_by(self, tmp_path):
+        docs = tmp_path / "docs"
+        docs.mkdir()
+        (docs / "page.md").write_text(
+            "---\ntype: Guide\ntitle: X\ndescription: Y\nverified:\n  at: 2026-01-01\n---\n# X\n"
+        )
+        config = Config(docs_dir=str(docs))
+        assert lint(config, strict=True) == 1
+
+    def test_ok_verified_bare_mapping_shorthand(self, tmp_path):
+        docs = tmp_path / "docs"
+        docs.mkdir()
+        (docs / "page.md").write_text(
+            "---\ntype: Guide\ntitle: X\ndescription: Y\n"
+            "verified:\n  by: human:x\n  at: 2026-01-01\n---\n# X\n"
+        )
+        config = Config(docs_dir=str(docs))
+        assert lint(config, strict=True) == 0
+
+    def test_warns_sources_missing_resource(self, tmp_path):
+        docs = tmp_path / "docs"
+        docs.mkdir()
+        (docs / "page.md").write_text(
+            "---\ntype: Guide\ntitle: X\ndescription: Y\n"
+            "sources:\n  - title: Some Source\n---\n# X\n"
+        )
+        config = Config(docs_dir=str(docs))
+        assert lint(config, strict=True) == 1
+
+    def test_ok_sources_with_resource(self, tmp_path):
+        docs = tmp_path / "docs"
+        docs.mkdir()
+        (docs / "page.md").write_text(
+            "---\ntype: Guide\ntitle: X\ndescription: Y\n"
+            "sources:\n  - resource: src/foo.py\n---\n# X\n"
+        )
+        config = Config(docs_dir=str(docs))
+        assert lint(config, strict=True) == 0

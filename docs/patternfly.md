@@ -3,6 +3,10 @@ type: Reference
 title: PatternFly
 description: How flydocs uses PatternFly components and design tokens.
 tags: [patternfly, theme, css, design-system]
+status: stable
+generated:
+  by: human:aknochow
+  at: 2026-08-03T00:00:00Z
 ---
 
 # PatternFly

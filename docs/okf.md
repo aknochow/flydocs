@@ -3,6 +3,10 @@ type: Reference
 title: OKF Frontmatter Standard
 description: The Open Knowledge Format used by flydocs for structured documentation.
 tags: [okf, frontmatter, standard, metadata]
+status: stable
+generated:
+  by: human:aknochow
+  at: 2026-08-03T00:00:00Z
 ---
 
 # OKF Frontmatter Standard
@@ -49,6 +53,60 @@ tags: [quickstart, install]
 
 Projects may add custom fields beyond these five. FlyDocs ignores
 fields it does not recognize.
+
+### v0.2 — Status, Staleness, and Provenance
+
+These five fields are optional and align field-for-field with
+[Google's OKF v0.2 specification](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md)
+(see [Relationship to Google OKF](#relationship-to-google-okf) below).
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `status` | enum | `draft`, `stable`, or `deprecated`. Defaults to `stable` when absent. |
+| `stale_after` | date (`YYYY-MM-DD`) | Absolute cutoff. The doc is considered stale once `today >= stale_after`. |
+| `generated` | object | `{by, at}` — records automated authorship. `by` is required if `generated` is present. |
+| `verified` | object or list | One or more `{by, at}` confirmation events. A single mapping is shorthand for a one-element list. |
+| `sources` | list | Objects with a required `resource` (path/URL/scope descriptor), plus optional `id`, `title`, `author`, `usage_count`, `last_modified`. |
+
+**Actor convention** — used by `generated.by`, `verified[].by`, and
+`sources[].author`:
+
+- `<producer>/<version>` for agents and tools, e.g. `reference_agent/gemini-2.5-pro`
+- `human:<id>` for a person, e.g. `human:aknochow`
+- `process:<id>` for an automated process, e.g. `process:nightly-build`
+
+**Trust tier** — consumers derive a trust tier from `verified`:
+
+- No `verified` key → **unverified**
+- `verified` entries all by non-`human:` actors → **machine-confirmed**
+- Any `verified` entry by a `human:<id>` actor → **human-reviewed**
+
+Example combining all five fields:
+
+```yaml
+---
+type: Reference
+title: Revenue Configuration
+description: How revenue figures are computed and reported.
+status: stable
+generated:
+  by: reference_agent/gemini-2.5-pro
+  at: 2026-07-01T09:00:00Z
+verified:
+  - by: human:aknochow
+    at: 2026-07-02
+stale_after: 2026-12-01
+sources:
+  - resource: src/billing/revenue.py
+    title: Revenue calculation module
+    last_modified: 2026-06-28
+---
+```
+
+A `status: draft` or `status: deprecated` doc shows a label on the built
+page; a `deprecated` doc also shows a deprecation notice, and a doc past
+its `stale_after` date shows a staleness warning. A doc with `generated.at`
+set shows a "Last updated" line in the footer.
 
 ## Document Types
 
@@ -198,7 +256,10 @@ flydocs lint
 ```
 
 Reports missing required fields, unknown types, empty descriptions,
-and orphan pages not in the nav.
+and orphan pages not in the nav. Also warns (never fails, per the OKF
+conformance rules) on: an invalid `status` value, an unparseable or
+past `stale_after` date, a `generated` block missing `by`, a `verified`
+entry missing `by`, or a `sources` entry missing `resource`.
 
 ## Relationship to Google OKF
 
@@ -222,6 +283,14 @@ data catalog types. No `pip install` of Google's package is needed.
 The shared fields (`type`, `tags`) follow the same semantics. The
 `title`, `description`, and `weight` fields are flydocs-specific
 extensions to the OKF pattern.
+
+As of flydocs' OKF v0.2, the `status`, `stale_after`, `generated`,
+`verified`, and `sources` fields are **field-for-field aligned** with
+Google's own [OKF v0.2 specification](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md) —
+same names, same types, same semantics (including the actor convention
+and trust-tier derivation). This gives flydocs docs a shared vocabulary
+with any other tooling built against Google's OKF, without adopting
+their BigQuery-specific tooling.
 
 ## Inspiration
 

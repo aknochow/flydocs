@@ -85,11 +85,18 @@
     </aside>
 
     <main class="flydocs-main">
+{% if status_badge_html or deprecated_notice_html or stale_notice_html %}
+      <div class="flydocs-doc-meta">
+        {{ status_badge_html }}
+        {{ deprecated_notice_html }}
+        {{ stale_notice_html }}
+      </div>
+{% endif %}
       <div class="flydocs-content pf-v6-c-content" data-pagefind-body>
         {{ content }}
       </div>
       <footer class="flydocs-footer">
-        Styled with <a href="https://www.patternfly.org/">PatternFly</a> · Built with <a href="https://github.com/aknochow/flydocs">FlyDocs</a>
+        Styled with <a href="https://www.patternfly.org/">PatternFly</a> · Built with <a href="https://github.com/aknochow/flydocs">FlyDocs</a>{% if footer_meta_html %} · {{ footer_meta_html }}{% endif %}
       </footer>
     </main>
   </div>

@@ -3,7 +3,16 @@
 from __future__ import annotations
 
 from flydocs.config import BannerConfig, Config, ThemeConfig
-from flydocs.theme import _sanitize_palette, build_banner_html, render_page, resolve_html_classes
+from flydocs.theme import (
+    _sanitize_palette,
+    build_banner_html,
+    build_deprecated_notice_html,
+    build_footer_meta_html,
+    build_stale_notice_html,
+    build_status_badge_html,
+    render_page,
+    resolve_html_classes,
+)
 
 
 class TestSanitizePalette:
@@ -126,3 +135,99 @@ class TestRenderPage:
         html = render_page("", "T", "", "", "", config, doc_type="Guide")
         assert 'content="Guide"' in html
         assert "data-pagefind-filter" in html
+
+    def test_new_okf_fields_default_to_nothing(self):
+        config = Config(name="Test")
+        html = render_page("<p>Body</p>", "T", "", "", "", config)
+        assert "flydocs-doc-meta" not in html
+        assert "flydocs-status-label" not in html
+        assert "flydocs-deprecated-notice" not in html
+        assert "flydocs-stale-notice" not in html
+
+    def test_status_badge_rendered(self):
+        config = Config(name="Test")
+        html = render_page("", "T", "", "", "", config, status="draft")
+        assert "flydocs-doc-meta" in html
+        assert "flydocs-status-label" in html
+        assert ">draft<" in html
+
+    def test_deprecated_notice_rendered(self):
+        config = Config(name="Test")
+        html = render_page("", "T", "", "", "", config, status="deprecated")
+        assert "flydocs-deprecated-notice" in html
+        assert "deprecated" in html.lower()
+
+    def test_stale_notice_rendered(self):
+        config = Config(name="Test")
+        html = render_page("", "T", "", "", "", config, stale_after="2020-01-01")
+        assert "flydocs-stale-notice" in html
+        assert "2020-01-01" in html
+
+    def test_footer_meta_rendered(self):
+        config = Config(name="Test")
+        html = render_page("", "T", "", "", "", config, generated_at="2026-01-01T00:00:00")
+        assert "Last updated 2026-01-01T00:00:00" in html
+
+
+class TestBuildStatusBadgeHtml:
+    def test_stable_renders_nothing(self):
+        assert build_status_badge_html("stable") == ""
+
+    def test_empty_renders_nothing(self):
+        assert build_status_badge_html("") == ""
+
+    def test_draft_renders_badge(self):
+        html = build_status_badge_html("draft")
+        assert "flydocs-status-label" in html
+        assert "flydocs-status-warning" in html
+        assert ">draft<" in html
+
+    def test_deprecated_renders_badge(self):
+        html = build_status_badge_html("deprecated")
+        assert "flydocs-status-danger" in html
+        assert ">deprecated<" in html
+
+    def test_escapes_html(self):
+        html = build_status_badge_html("draft")
+        assert "<script>" not in html
+
+
+class TestBuildDeprecatedNoticeHtml:
+    def test_non_deprecated_renders_nothing(self):
+        assert build_deprecated_notice_html("draft") == ""
+        assert build_deprecated_notice_html("stable") == ""
+        assert build_deprecated_notice_html("") == ""
+
+    def test_deprecated_renders_notice(self):
+        html = build_deprecated_notice_html("deprecated")
+        assert "flydocs-deprecated-notice" in html
+        assert "deprecated" in html.lower()
+
+
+class TestBuildStaleNoticeHtml:
+    def test_empty_renders_nothing(self):
+        assert build_stale_notice_html("") == ""
+
+    def test_renders_notice_with_date(self):
+        html = build_stale_notice_html("2020-01-01")
+        assert "flydocs-stale-notice" in html
+        assert "2020-01-01" in html
+
+    def test_escapes_html(self):
+        html = build_stale_notice_html("<script>alert(1)</script>")
+        assert "<script>" not in html
+        assert "&lt;script&gt;" in html
+
+
+class TestBuildFooterMetaHtml:
+    def test_empty_renders_nothing(self):
+        assert build_footer_meta_html("") == ""
+
+    def test_renders_last_updated(self):
+        html = build_footer_meta_html("2026-01-01T00:00:00")
+        assert html == "Last updated 2026-01-01T00:00:00"
+
+    def test_escapes_html(self):
+        html = build_footer_meta_html("<script>alert(1)</script>")
+        assert "<script>" not in html
+        assert "&lt;script&gt;" in html

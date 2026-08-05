@@ -2,7 +2,23 @@
 
 from __future__ import annotations
 
-from flydocs.frontmatter import VALID_TYPES, extract_title, parse_frontmatter
+from datetime import date
+
+from flydocs.frontmatter import (
+    DEFAULT_STATUS,
+    VALID_STATUSES,
+    VALID_TYPES,
+    extract_title,
+    get_generated,
+    get_stale_after,
+    get_status,
+    is_human_actor,
+    is_stale,
+    normalize_tags,
+    normalize_verified,
+    parse_frontmatter,
+    trust_tier,
+)
 
 
 class TestParseFrontmatter:
@@ -26,9 +42,34 @@ class TestParseFrontmatter:
         assert body == "Body"
 
     def test_colon_in_value(self):
-        text = "---\ntitle: Hello: World\n---\nBody"
+        text = '---\ntitle: "Hello: World"\n---\nBody'
         meta, _body = parse_frontmatter(text)
         assert meta["title"] == "Hello: World"
+
+    def test_invalid_yaml_degrades_gracefully(self):
+        # An unquoted "key: value: with-colon" line is not valid YAML (a bare
+        # colon+space inside a plain scalar is reserved for mapping syntax).
+        # Real YAML parsing must not crash on this — it should degrade the
+        # same way "no frontmatter found" does.
+        text = "---\ntitle: Hello: World\n---\nBody"
+        meta, body = parse_frontmatter(text)
+        assert meta == {}
+        assert body == text
+
+    def test_invalid_yaml_logs_a_warning(self, caplog):
+        # Silent frontmatter loss is a real behavior change from the old
+        # hand-rolled parser — a warning gives users a diagnostic clue.
+        text = "---\ntitle: Hello: World\n---\nBody"
+        with caplog.at_level("WARNING"):
+            parse_frontmatter(text)
+        assert any("Invalid YAML frontmatter" in r.message for r in caplog.records)
+
+    def test_non_mapping_frontmatter_logs_a_warning(self, caplog):
+        text = "---\n- just\n- a\n- list\n---\nBody"
+        with caplog.at_level("WARNING"):
+            meta, _body = parse_frontmatter(text)
+        assert meta == {}
+        assert any("not a YAML mapping" in r.message for r in caplog.records)
 
     def test_quoted_value(self):
         text = '---\ntitle: "Quoted Title"\n---\nBody'
@@ -46,6 +87,17 @@ class TestParseFrontmatter:
         meta, _body = parse_frontmatter(text)
         assert meta == {}
 
+    def test_parses_list_field(self):
+        text = "---\ntags: [a, b]\n---\nBody"
+        meta, _body = parse_frontmatter(text)
+        assert meta["tags"] == ["a", "b"]
+
+    def test_parses_nested_object(self):
+        text = "---\ngenerated:\n  by: human:x\n  at: 2026-01-01\n---\nBody"
+        meta, _body = parse_frontmatter(text)
+        assert meta["generated"]["by"] == "human:x"
+        assert meta["generated"]["at"] == date(2026, 1, 1)
+
 
 class TestExtractTitle:
     def test_from_meta(self):
@@ -60,7 +112,142 @@ class TestExtractTitle:
     def test_custom_fallback(self):
         assert extract_title({}, "No heading", fallback="Custom") == "Custom"
 
+    def test_non_string_title_coerced_to_str(self):
+        # An unquoted numeric-looking title (e.g. `title: 2024`) parses as a
+        # YAML int, not a string; extract_title's -> str contract must hold.
+        assert extract_title({"title": 2024}, "# Heading") == "2024"
+
 
 class TestValidTypes:
     def test_expected_types(self):
         assert VALID_TYPES == {"Concept", "Guide", "Reference", "Example"}
+
+
+class TestNormalizeTags:
+    def test_missing(self):
+        assert normalize_tags({}) == []
+
+    def test_list(self):
+        assert normalize_tags({"tags": ["a", "b"]}) == ["a", "b"]
+
+    def test_bare_scalar(self):
+        assert normalize_tags({"tags": "solo"}) == ["solo"]
+
+
+class TestGetStatus:
+    def test_default_when_absent(self):
+        assert get_status({}) == DEFAULT_STATUS
+
+    def test_explicit_status(self):
+        assert get_status({"status": "draft"}) == "draft"
+
+    def test_falsy_status_not_treated_as_absent(self):
+        # status: false / status: 0 are present-but-invalid values, not
+        # "field is absent" — they must flow through to the linter's
+        # VALID_STATUSES check rather than silently becoming "stable".
+        assert get_status({"status": False}) == "False"
+        assert get_status({"status": 0}) == "0"
+
+    def test_valid_statuses(self):
+        assert VALID_STATUSES == {"draft", "stable", "deprecated"}
+
+
+class TestGetStaleAfter:
+    def test_string_date(self):
+        assert get_stale_after({"stale_after": "2026-01-01"}) == date(2026, 1, 1)
+
+    def test_real_date_object(self):
+        assert get_stale_after({"stale_after": date(2026, 1, 1)}) == date(2026, 1, 1)
+
+    def test_missing(self):
+        assert get_stale_after({}) is None
+
+    def test_malformed(self):
+        assert get_stale_after({"stale_after": "not-a-date"}) is None
+
+
+class TestIsStale:
+    def test_no_stale_after(self):
+        assert is_stale({}) is False
+
+    def test_past_date_is_stale(self):
+        assert is_stale({"stale_after": "2020-01-01"}, today=date(2026, 1, 1)) is True
+
+    def test_today_equals_stale_after_is_stale(self):
+        assert is_stale({"stale_after": "2026-01-01"}, today=date(2026, 1, 1)) is True
+
+    def test_future_date_not_stale(self):
+        assert is_stale({"stale_after": "2099-01-01"}, today=date(2026, 1, 1)) is False
+
+    def test_malformed_date_not_stale(self):
+        assert is_stale({"stale_after": "not-a-date"}) is False
+
+
+class TestNormalizeVerified:
+    def test_missing(self):
+        assert normalize_verified({}) == []
+
+    def test_bare_mapping_shorthand(self):
+        result = normalize_verified({"verified": {"by": "human:x", "at": "2026-01-01"}})
+        assert result == [{"by": "human:x", "at": "2026-01-01"}]
+
+    def test_list(self):
+        entries = [
+            {"by": "human:x", "at": "2026-01-01"},
+            {"by": "process:y", "at": "2026-01-02"},
+        ]
+        assert normalize_verified({"verified": entries}) == entries
+
+    def test_filters_non_dict_entries(self):
+        assert normalize_verified({"verified": ["not-a-dict"]}) == []
+
+
+class TestIsHumanActor:
+    def test_human_prefix(self):
+        assert is_human_actor("human:aknochow") is True
+
+    def test_non_human(self):
+        assert is_human_actor("reference_agent/gemini-2.5-pro") is False
+        assert is_human_actor("process:nightly") is False
+
+
+class TestTrustTier:
+    def test_unverified_when_absent(self):
+        assert trust_tier({}) == "unverified"
+
+    def test_machine_confirmed(self):
+        meta = {"verified": [{"by": "process:nightly", "at": "2026-01-01"}]}
+        assert trust_tier(meta) == "machine-confirmed"
+
+    def test_human_reviewed(self):
+        meta = {"verified": [{"by": "human:aknochow", "at": "2026-01-01"}]}
+        assert trust_tier(meta) == "human-reviewed"
+
+    def test_human_reviewed_wins_when_mixed(self):
+        meta = {
+            "verified": [
+                {"by": "process:nightly", "at": "2026-01-01"},
+                {"by": "human:aknochow", "at": "2026-01-02"},
+            ]
+        }
+        assert trust_tier(meta) == "human-reviewed"
+
+
+class TestGetGenerated:
+    def test_missing(self):
+        assert get_generated({}) == {"by": "", "at": ""}
+
+    def test_extracts_by_and_at(self):
+        meta = {"generated": {"by": "human:x", "at": "2026-01-01T10:00:00"}}
+        result = get_generated(meta)
+        assert result["by"] == "human:x"
+        assert result["at"] == "2026-01-01T10:00:00"
+
+    def test_date_object_normalized_to_iso_string(self):
+        # A bare date (no time component) is assumed midnight UTC.
+        meta = {"generated": {"by": "human:x", "at": date(2026, 1, 1)}}
+        result = get_generated(meta)
+        assert result["at"] == "2026-01-01T00:00:00+00:00"
+
+    def test_malformed_non_dict_returns_empty(self):
+        assert get_generated({"generated": "not-a-dict"}) == {"by": "", "at": ""}

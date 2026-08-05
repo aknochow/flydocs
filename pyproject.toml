@@ -28,6 +28,7 @@ dependencies = [
     "Jinja2>=3.1",
     "Pygments>=2.15",
     "pagefind[extended]>=1.5,<2.0",
+    "PyYAML>=6.0",
 ]
 
 [project.optional-dependencies]
