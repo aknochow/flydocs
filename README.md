@@ -81,8 +81,8 @@ See the [OKF Frontmatter](https://aknochow.github.io/flydocs/okf/) reference for
 | `flydocs init PATH` | Scaffold a new doc with OKF frontmatter |
 | `flydocs badges` | Print badge markdown for README |
 | `flydocs readme` | Generate README.md from docs/index.md |
-| `flydocs okf preview` | Preview OKF-enhanced build |
-| `flydocs okf init` | Add OKF frontmatter to existing docs |
+| `flydocs okf preview` | Preview OKF-enhanced build *(planned, not yet implemented)* |
+| `flydocs okf init` | Add OKF frontmatter to existing docs *(planned, not yet implemented)* |
 
 ## Configuration
 
