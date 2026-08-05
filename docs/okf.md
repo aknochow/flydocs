@@ -214,38 +214,31 @@ want a PatternFly site without restructuring their content.
 
 ## Migrating to OKF
 
-FlyDocs provides tooling to adopt OKF incrementally:
+For the actual step-by-step process — starting a new project's docs or
+auditing an existing set to compliance, plus a lookup table for every
+`flydocs lint` warning — see the [OKF Compliance Guide](okf-compliance-guide.md).
 
-### Preview
+FlyDocs plans tooling to automate parts of that process:
 
-Generate an OKF-enhanced build into a separate output directory without
-modifying source files:
+### Preview *(planned, not yet implemented)*
 
 ```bash
 flydocs okf preview
 ```
 
-This infers types from directory names and headings, generates suggested
-frontmatter, and builds a preview site at `public-okf/`. Compare it
-against your existing site to see what OKF adds.
+Intended to infer types from directory names and headings, generate
+suggested frontmatter, and build a preview site at `public-okf/`
+without touching source files. Currently exits with an error.
 
-### Init
-
-Scaffold OKF frontmatter onto existing markdown files:
+### Init *(planned, not yet implemented)*
 
 ```bash
 flydocs okf init docs/
 ```
 
-For each `.md` file without frontmatter, this prepends a suggested
-`---` block based on the filename, directory, and first heading. Files
-that already have frontmatter are left unchanged.
-
-Review the suggestions, adjust types and descriptions, then build:
-
-```bash
-flydocs build
-```
+Intended to scaffold a suggested `---` block onto `.md` files that
+have no frontmatter, based on filename, directory, and first heading.
+Currently exits with an error.
 
 ### Lint
 

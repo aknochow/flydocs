@@ -1,8 +1,8 @@
-# flydocs
+# FlyDocs
 
 Static documentation sites with PatternFly from markdown.
 
-Flydocs takes your markdown files and generates a complete
+FlyDocs takes your markdown files and generates a complete
 documentation site with Red Hat's PatternFly design system.
 Dark mode, light mode, responsive layout, search, and navigation
 all work out of the box.
@@ -81,8 +81,8 @@ See the [OKF Frontmatter](https://aknochow.github.io/flydocs/okf/) reference for
 | `flydocs init PATH` | Scaffold a new doc with OKF frontmatter |
 | `flydocs badges` | Print badge markdown for README |
 | `flydocs readme` | Generate README.md from docs/index.md |
-| `flydocs okf preview` | Preview OKF-enhanced build |
-| `flydocs okf init` | Add OKF frontmatter to existing docs |
+| `flydocs okf preview` | Preview OKF-enhanced build *(planned, not yet implemented)* |
+| `flydocs okf init` | Add OKF frontmatter to existing docs *(planned, not yet implemented)* |
 
 ## Configuration
 
