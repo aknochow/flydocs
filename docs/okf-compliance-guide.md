@@ -135,11 +135,15 @@ of you.
 | `verified entry missing 'by'` | A `verified` entry has no `by` | Add `by` to that entry |
 | `sources entry missing 'resource'` | A `sources` entry has no `resource` | Add the path/URL, or remove the incomplete entry |
 
-All of these are warnings, never hard failures — `flydocs lint` only
-exits non-zero on missing `type`/`title`/`description` or a broken
-link, matching the OKF spec's own rule that only a non-empty `type` is
-ever a hard requirement. Run with `--strict` to fail the build on any
-warning too, once you're aiming for the zero-warning bar.
+All of the OKF v0.2 checks above (`status`, `stale_after`, `generated`,
+`verified`, `sources`) are warnings, never hard failures — that
+matches the OKF spec's own conformance rule that only a non-empty
+`type` is ever required. `flydocs` itself enforces a few additional
+hard requirements beyond that spec minimum: missing `title`/
+`description`, a broken relative link, and a `[[nav]]` entry pointing
+at a file that doesn't exist all exit non-zero too. Run with
+`--strict` to fail the build on any warning as well, once you're
+aiming for the zero-warning bar.
 
 ## Planned Tooling
 
