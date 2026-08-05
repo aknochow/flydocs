@@ -19,6 +19,11 @@ enabled = true
 ]
 
 [[nav]]
+"Guides" = [
+    { "OKF Compliance Guide" = "okf-compliance-guide.md" },
+]
+
+[[nav]]
 "Reference" = [
     { "OKF Frontmatter" = "okf.md" },
     { "PatternFly" = "patternfly.md" },

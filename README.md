@@ -1,8 +1,8 @@
-# flydocs
+# FlyDocs
 
 Static documentation sites with PatternFly from markdown.
 
-Flydocs takes your markdown files and generates a complete
+FlyDocs takes your markdown files and generates a complete
 documentation site with Red Hat's PatternFly design system.
 Dark mode, light mode, responsive layout, search, and navigation
 all work out of the box.
