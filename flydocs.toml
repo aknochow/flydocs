@@ -13,6 +13,30 @@ tagline = "Static documentation sites with PatternFly"
 [readme]
 enabled = true
 
+[[badges]]
+id = "docs"
+label = "docs"
+url = "https://aknochow.github.io/flydocs/"
+img = "https://img.shields.io/badge/docs-online-blue"
+
+[[badges]]
+id = "github"
+label = "aknochow/flydocs"
+url = "https://github.com/aknochow/flydocs"
+img = "https://img.shields.io/github/actions/workflow/status/aknochow/flydocs/test.yml?label=aknochow%2Fflydocs"
+
+[[badges]]
+id = "okf"
+label = "OKF"
+url = "https://aknochow.github.io/flydocs/okf/"
+img = "https://img.shields.io/badge/OKF-v0.2-blueviolet"
+
+[[badges]]
+id = "patternfly"
+label = "PatternFly"
+url = "https://www.patternfly.org/"
+img = "https://img.shields.io/badge/PatternFly-v6-EE0000"
+
 [[nav]]
 "Overview" = [
     { "Introduction" = "index.md" },
