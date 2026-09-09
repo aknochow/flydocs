@@ -1,0 +1,17 @@
+{
+  "name": "FlyDocs",
+  "install": "pip install -e \".[dev]\"",
+  "terminals": [
+    {
+      "name": "preview",
+      "command": "export PATH=\"$HOME/.local/bin:$PATH\" && flydocs preview --port 8000",
+      "description": "Builds the docs site and serves it at http://localhost:8000 with live rebuild on start."
+    }
+  ],
+  "ports": [
+    {
+      "name": "preview",
+      "port": 8000
+    }
+  ]
+}
