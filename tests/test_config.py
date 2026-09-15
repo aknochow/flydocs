@@ -14,6 +14,7 @@ class TestLoadConfig:
         assert config.name == "Documentation"
         assert config.theme.mode == "auto"
         assert config.theme.palette == "flydocs-dark"
+        assert config.theme.variant == "default"
 
     def test_loads_basic_config(self, tmp_path):
         cfg = tmp_path / "flydocs.toml"
@@ -62,6 +63,12 @@ class TestLoadConfig:
         config = load_config(cfg)
         assert config.readme.enabled is True
         assert config.readme.output == "OUT.md"
+
+    def test_theme_variant(self, tmp_path):
+        cfg = tmp_path / "flydocs.toml"
+        cfg.write_text('[project]\nname = "Test"\n[theme]\nvariant = "felt"\n')
+        config = load_config(cfg)
+        assert config.theme.variant == "felt"
 
     def test_badges_filtered(self, tmp_path):
         cfg = tmp_path / "flydocs.toml"

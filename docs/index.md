@@ -22,6 +22,7 @@ all work out of the box.
 
 - **PatternFly** — Red Hat's open source design system, CSS-only
 - **Dark / Light / Auto** — respects system preference with manual toggle
+- **Project Felt** — optional PatternFly theme variant with red accents and pill-shaped controls
 - **OKF frontmatter** — optional structured metadata for auto-nav and search
 - **Plain markdown works** — no frontmatter required to get a site
 - **Badges** — define once in config, reference anywhere in docs

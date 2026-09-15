@@ -1,5 +1,11 @@
 /* flydocs — PatternFly documentation site styles */
 
+:root {
+  --flydocs-radius-control: var(--pf-t--global--border--radius--control--default);
+  --flydocs-radius-container: var(--pf-t--global--border--radius--small);
+  --flydocs-radius-tiny: var(--pf-t--global--border--radius--tiny);
+}
+
 /* ── Palette: flydocs-dark — deeper dark theme ── */
 :root.flydocs-palette-flydocs-dark.pf-v6-theme-dark {
   --pf-t--global--background--color--primary--default: #1b1d21;
@@ -9,6 +15,11 @@
   --pf-t--global--text--color--regular: #e0e0e0;
   --pf-t--global--text--color--subtle: #d2d2d2;
   --pf-t--global--text--color--placeholder: #6a6e73;
+}
+
+/* Brand/link blues stay on the default PatternFly palette. Felt
+   owns those tokens when pf-v6-theme-felt is present. */
+:root.flydocs-palette-flydocs-dark.pf-v6-theme-dark:not(.pf-v6-theme-felt) {
   --pf-t--global--text--color--link--default: #73bcf7;
   --pf-t--global--text--color--link--hover: #2b9af3;
   --pf-t--global--color--brand--default: #0066cc;
@@ -137,7 +148,7 @@ body {
   background: none;
   border: 1px solid var(--pf-t--global--border--color--default);
   color: var(--pf-t--global--text--color--subtle);
-  border-radius: 6px;
+  border-radius: var(--flydocs-radius-control);
   padding: 0.3rem 0.5rem;
   cursor: pointer;
   display: flex;
@@ -162,7 +173,7 @@ body {
   right: 1.5rem;
   background-color: var(--pf-t--global--background--color--secondary--default);
   border: 1px solid var(--pf-t--global--border--color--default);
-  border-radius: 8px;
+  border-radius: var(--flydocs-radius-container);
   padding: 1rem;
   z-index: 400;
   min-width: 220px;
@@ -184,7 +195,7 @@ body {
 .flydocs-btn-group {
   display: flex;
   border: 1px solid var(--pf-t--global--border--color--default);
-  border-radius: 6px;
+  border-radius: var(--flydocs-radius-control);
   overflow: hidden;
 }
 
@@ -211,7 +222,7 @@ body {
 
 .flydocs-btn-group-item--active {
   background-color: var(--pf-t--global--color--brand--default);
-  color: #fff;
+  color: var(--pf-t--global--text--color--on-brand--default);
 }
 
 .flydocs-btn-group-item--active:hover {
@@ -227,7 +238,7 @@ body {
   --pagefind-ui-border: var(--pf-t--global--border--color--default);
   --pagefind-ui-tag: var(--pf-t--global--background--color--primary--default);
   --pagefind-ui-border-width: 1px;
-  --pagefind-ui-border-radius: 6px;
+  --pagefind-ui-border-radius: var(--flydocs-radius-control);
   --pagefind-ui-font: inherit;
   width: 160px;
 }
@@ -271,7 +282,7 @@ body {
   overflow-y: auto;
   background-color: var(--pf-t--global--background--color--primary--default);
   border: 1px solid var(--pf-t--global--border--color--default);
-  border-radius: 8px;
+  border-radius: var(--flydocs-radius-container);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   z-index: 500;
   padding: 1rem 1.5rem;
@@ -357,7 +368,7 @@ body {
   display: inline-block;
   align-self: flex-start;
   padding: 0.125rem 0.5rem;
-  border-radius: 999px;
+  border-radius: var(--pf-t--global--border--radius--pill);
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -382,7 +393,7 @@ body {
 .flydocs-deprecated-notice,
 .flydocs-stale-notice {
   padding: 0.75rem 1rem;
-  border-radius: 4px;
+  border-radius: var(--flydocs-radius-tiny);
   border-left: 4px solid;
   font-size: 0.9rem;
   max-width: 900px;
@@ -447,7 +458,7 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   padding: 0.6rem 0.75rem;
-  border-radius: 6px;
+  border-radius: var(--flydocs-radius-control);
   list-style: none;
   user-select: none;
   transition: background-color 0.15s;
@@ -484,7 +495,7 @@ details[open] > summary .pf-v6-c-nav__toggle-icon {
   text-decoration: none;
   padding: 0.3rem 0.75rem 0.3rem 1.75rem;
   font-size: 0.85rem;
-  border-radius: 6px;
+  border-radius: var(--flydocs-radius-control);
   transition: background-color 0.15s, color 0.15s;
 }
 
@@ -552,7 +563,7 @@ details[open] > summary .pf-v6-c-nav__toggle-icon {
   background-color: var(--pf-t--global--background--color--secondary--default);
   color: var(--pf-t--global--text--color--link--default);
   padding: 0.15em 0.4em;
-  border-radius: 3px;
+  border-radius: var(--flydocs-radius-tiny);
   font-size: 0.875em;
   font-family: "Red Hat Mono", "Fira Code", "Consolas", monospace;
 }
@@ -560,7 +571,7 @@ details[open] > summary .pf-v6-c-nav__toggle-icon {
 .pf-v6-c-content pre {
   background-color: var(--pf-t--global--background--color--secondary--default);
   border: 1px solid var(--pf-t--global--border--color--default);
-  border-radius: 6px;
+  border-radius: var(--flydocs-radius-container);
   padding: 1rem;
   overflow-x: auto;
   margin-bottom: 1rem;
@@ -581,7 +592,7 @@ details[open] > summary .pf-v6-c-nav__toggle-icon {
   background-color: var(--pf-t--global--border--color--default);
   color: var(--pf-t--global--text--color--subtle);
   border: 1px solid var(--pf-t--global--text--color--subtle);
-  border-radius: 4px;
+  border-radius: var(--flydocs-radius-control);
   padding: 0.2rem 0.5rem;
   font-size: 0.75rem;
   cursor: pointer;
@@ -596,7 +607,7 @@ pre:hover .copy-btn { opacity: 1; }
 
 .copy-btn--copied {
   background-color: var(--pf-t--global--color--status--success--default) !important;
-  color: #fff !important;
+  color: var(--pf-t--global--text--color--status--on-success--default) !important;
   border-color: var(--pf-t--global--color--status--success--default) !important;
   opacity: 1 !important;
 }
@@ -633,7 +644,7 @@ pre:hover .copy-btn { opacity: 1; }
   margin: 1rem 0;
   color: var(--pf-t--global--text--color--subtle);
   background-color: color-mix(in srgb, var(--pf-t--global--text--color--link--default) 5%, transparent);
-  border-radius: 0 6px 6px 0;
+  border-radius: 0 var(--flydocs-radius-container) var(--flydocs-radius-container) 0;
 }
 
 .pf-v6-c-content hr {
@@ -667,7 +678,7 @@ h4:hover .flydocs-anchor {
 .toc {
   background-color: var(--pf-t--global--background--color--secondary--default);
   border: 1px solid var(--pf-t--global--border--color--default);
-  border-radius: 6px;
+  border-radius: var(--flydocs-radius-container);
   padding: 1rem 1.5rem;
   margin-bottom: 2rem;
 }

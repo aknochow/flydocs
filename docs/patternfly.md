@@ -97,6 +97,42 @@ palette = "flydocs-dark"
 Palettes only affect dark mode — light mode uses stock PatternFly
 colors regardless of the palette setting.
 
+When `[theme] variant = "felt"` is set, the `flydocs-dark` palette
+still deepens dark backgrounds, but it does not override brand or
+link colors. Those come from PatternFly Felt tokens.
+
+## Project Felt
+
+PatternFly's Project Felt theme is a Red Hat–aligned variant: red
+brand accents and pill-shaped borders on buttons, controls, and
+containers. It is built on the same design tokens as the default
+theme, so enabling it does not require markup changes.
+
+Felt is independent of light/dark mode. PatternFly activates it by
+adding `pf-v6-theme-felt` to `<html>`, alongside `pf-v6-theme-dark`
+when dark mode is on.
+
+Set via `[theme] variant` in `flydocs.toml`:
+
+```toml
+[theme]
+variant = "felt"
+```
+
+| Variant | HTML class | Description |
+|---------|------------|-------------|
+| `default` | none | Stock PatternFly (blue accents, square controls). This is the generator default. |
+| `felt` | `pf-v6-theme-felt` | Project Felt (red accents, pill-shaped controls). |
+
+FlyDocs custom chrome (theme toggle, search, nav links, copy
+button) uses PatternFly radius tokens so those controls become
+pills automatically under Felt.
+
+Glass and high-contrast PatternFly modes are vendored in
+`patternfly-base.css` but are not yet exposed as FlyDocs config
+options. Glass also needs branded background images that FlyDocs
+does not ship.
+
 ## PatternFly Components Used
 
 ### Content (`pf-v6-c-content`)

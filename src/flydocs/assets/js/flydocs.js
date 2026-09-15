@@ -12,6 +12,9 @@
       document.documentElement.getAttribute("data-palette") || "default";
     var paletteClass =
       palette !== "default" ? "flydocs-palette-" + palette : "";
+    var variant =
+      document.documentElement.getAttribute("data-variant") || "default";
+    var variantClass = variant === "felt" ? "pf-v6-theme-felt" : "";
     var schemeIcons = { auto: "◑", light: "☀", dark: "☾" };
     var btnIcon = btn.querySelector("svg");
 
@@ -24,6 +27,9 @@
       } else {
         isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
       }
+
+      if (variantClass)
+        document.documentElement.classList.add(variantClass);
 
       if (isDark) {
         document.documentElement.classList.add("pf-v6-theme-dark");

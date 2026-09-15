@@ -27,6 +27,7 @@ class BannerConfig:
 class ThemeConfig:
     mode: str = "auto"
     palette: str = "flydocs-dark"
+    variant: str = "default"
     logo: str = ""
     favicon: str = ""
     tagline: str = ""
@@ -121,6 +122,7 @@ def load_config(config_path: str | Path | None = None) -> Config:
     theme = ThemeConfig(
         mode=str(theme_raw.get("mode", "auto")),
         palette=str(theme_raw.get("palette", "flydocs-dark")),
+        variant=str(theme_raw.get("variant", "default")),
         logo=str(theme_raw.get("logo", "")),
         favicon=str(theme_raw.get("favicon", "")),
         tagline=str(theme_raw.get("tagline", "")),

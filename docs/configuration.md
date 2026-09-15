@@ -53,6 +53,7 @@ controls mode, branding, and optional UI elements.
 [theme]
 mode = "auto"
 palette = "flydocs-dark"
+variant = "felt"
 logo = "docs/assets/logo.svg"
 favicon = "docs/assets/favicon.svg"
 tagline = "Your project tagline"
@@ -63,6 +64,7 @@ google_fonts = true
 |-----|------|---------|-------------|
 | `mode` | string | `"auto"` | Theme mode: `"dark"`, `"light"`, or `"auto"`. Auto detects system preference and shows a toggle. |
 | `palette` | string | `"flydocs-dark"` | Dark mode color palette: `"default"` (stock PatternFly) or `"flydocs-dark"` (deeper dark theme). |
+| `variant` | string | `"default"` | PatternFly theme variant: `"default"` (stock PatternFly) or `"felt"` (Project Felt — red accents and pill-shaped controls). Independent of light/dark mode. |
 | `logo` | string | `""` | Path to a logo image (SVG or PNG) displayed in the masthead. |
 | `favicon` | string | `""` | Path to a favicon. FlyDocs ships a default if not set. |
 | `tagline` | string | `""` | Short text shown next to the project name in the masthead. |
@@ -285,6 +287,7 @@ site_dir = "public"
 
 [theme]
 mode = "auto"
+variant = "felt"
 tagline = "OpenShell Gateway Operator"
 google_fonts = true
 

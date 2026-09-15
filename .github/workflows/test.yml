@@ -53,6 +53,7 @@ jobs:
             -v $PWD/public:/usr/share/nginx/html:ro nginx:alpine
           sleep 2
           curl -sf http://localhost:8080/ | grep "flydocs"
+          curl -sf http://localhost:8080/ | grep "pf-v6-theme-felt"
           curl -sf http://localhost:8080/okf/ | grep "OKF"
           curl -sf http://localhost:8080/configuration/ | grep "Configuration"
           curl -sf http://localhost:8080/patternfly/ | grep "PatternFly"
