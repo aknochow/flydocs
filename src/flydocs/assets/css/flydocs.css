@@ -18,11 +18,54 @@
 }
 
 /* Brand/link blues stay on the default PatternFly palette. Felt
-   owns those tokens when pf-v6-theme-felt is present. */
+   keeps those tokens and paints chrome with brand-accent instead. */
 :root.flydocs-palette-flydocs-dark.pf-v6-theme-dark:not(.pf-v6-theme-felt) {
   --pf-t--global--text--color--link--default: #73bcf7;
   --pf-t--global--text--color--link--hover: #2b9af3;
   --pf-t--global--color--brand--default: #0066cc;
+}
+
+/* Project Felt. PatternFly only remaps accent color and control radius.
+   FlyDocs chrome opts into those tokens so the red accent and pill
+   containers show up. Body links stay on the link token (still blue). */
+:root.pf-v6-theme-felt {
+  --flydocs-radius-container: var(--pf-t--global--border--radius--pill);
+}
+
+:root.pf-v6-theme-felt .flydocs-masthead {
+  box-shadow: inset 0 -3px 0 var(--pf-t--global--color--brand--accent--default);
+}
+
+:root.pf-v6-theme-felt .flydocs-brand {
+  color: var(--pf-t--global--color--brand--accent--default);
+}
+
+:root.pf-v6-theme-felt .flydocs-brand:hover {
+  color: var(--pf-t--global--color--brand--accent--hover);
+}
+
+:root.pf-v6-theme-felt .flydocs-sidebar-toggle:hover {
+  color: var(--pf-t--global--color--brand--accent--default);
+}
+
+:root.pf-v6-theme-felt .flydocs-btn-group-item--active,
+:root.pf-v6-theme-felt .flydocs-btn-group-item--active:hover {
+  background-color: var(--pf-t--global--color--brand--accent--default);
+  color: var(--pf-t--global--text--color--on-brand--accent--default);
+}
+
+:root.pf-v6-theme-felt .flydocs-search {
+  --pagefind-ui-primary: var(--pf-t--global--color--brand--accent--default);
+}
+
+:root.pf-v6-theme-felt .pf-v6-c-nav__subnav .pf-v6-c-nav__link.pf-m-current {
+  color: var(--pf-t--global--color--brand--accent--default);
+  background-color: color-mix(in srgb, var(--pf-t--global--color--brand--accent--default) 14%, transparent);
+  border-left-color: var(--pf-t--global--color--brand--accent--default);
+}
+
+:root.pf-v6-theme-felt .pf-v6-c-content h1 {
+  border-bottom-color: var(--pf-t--global--color--brand--accent--default);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
