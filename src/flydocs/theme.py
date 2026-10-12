@@ -3,12 +3,15 @@
 from __future__ import annotations
 
 import html as html_module
+import logging
 import re
 
 from jinja2 import Environment, PackageLoader
 from markupsafe import Markup
 
 from flydocs.config import Config
+
+logger = logging.getLogger(__name__)
 
 _env = Environment(
     loader=PackageLoader("flydocs", "templates"),
@@ -29,9 +32,13 @@ def _sanitize_palette(palette: str) -> str:
 
 def _sanitize_variant(variant: str) -> str:
     """Allow Felt, blue Felt, and classic. Unknown values fall back to Felt."""
-    variant = _VARIANT_ALIASES.get(variant, variant)
-    if variant in _VARIANTS:
-        return variant
+    normalized = _VARIANT_ALIASES.get(variant, variant)
+    if normalized in _VARIANTS:
+        return normalized
+    logger.warning(
+        "Unknown theme variant %r; using felt. Expected felt, flydocs-felt, or flydocs-classic.",
+        variant,
+    )
     return "felt"
 
 

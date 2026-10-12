@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 from flydocs.config import BannerConfig, Config, ThemeConfig
@@ -122,10 +123,19 @@ class TestSanitizeVariant:
     def test_legacy_default_is_classic(self):
         assert _sanitize_variant("default") == "flydocs-classic"
 
-    def test_invalid_falls_back_to_felt(self):
-        assert _sanitize_variant("glass") == "felt"
-        assert _sanitize_variant('felt" onload="alert(1)') == "felt"
-        assert _sanitize_variant("Felt") == "felt"
+    def test_invalid_falls_back_to_felt(self, caplog):
+        with caplog.at_level(logging.WARNING, logger="flydocs.theme"):
+            assert _sanitize_variant("glass") == "felt"
+            assert _sanitize_variant('felt" onload="alert(1)') == "felt"
+            assert _sanitize_variant("Felt") == "felt"
+        assert "glass" in caplog.text
+        assert "using felt" in caplog.text
+
+    def test_known_variants_do_not_warn(self, caplog):
+        with caplog.at_level(logging.WARNING, logger="flydocs.theme"):
+            assert _sanitize_variant("felt") == "felt"
+            assert _sanitize_variant("default") == "flydocs-classic"
+        assert caplog.records == []
 
 
 class TestBuildBannerHtml:
