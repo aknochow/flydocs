@@ -100,8 +100,9 @@ colors regardless of the palette setting.
 When `[theme] variant = "felt"` (the default), the `flydocs-dark`
 palette still deepens dark backgrounds, but it leaves brand and
 link tokens alone. Red Felt recolors the accent. It does not
-recolor links. `flydocs-felt` keeps those blue brand tokens and
-only takes Felt's shape.
+recolor links. `flydocs-felt` takes Felt's shape and puts the
+accent tokens back on PatternFly blue, in light and dark. The
+`flydocs-dark` palette is not required for that blue.
 
 ## Project Felt
 

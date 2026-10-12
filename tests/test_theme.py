@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from flydocs.config import BannerConfig, Config, ThemeConfig
 from flydocs.theme import (
     _sanitize_palette,
@@ -92,6 +94,19 @@ class TestResolveHtmlClasses:
         result = resolve_html_classes("light", "default", "not-a-theme")
         assert "pf-v6-theme-felt" in result
         assert "flydocs-variant-felt" in result
+
+
+class TestFlydocsFeltStylesheet:
+    def test_blue_accent_is_not_limited_to_dark_palette(self):
+        css = Path("src/flydocs/assets/css/flydocs.css").read_text()
+        block = css.split(":root.flydocs-variant-flydocs-felt", 1)[1].split("}", 1)[0]
+        assert "--flydocs-accent: var(--pf-t--global--color--brand--default)" in block
+        assert (
+            "--pf-t--global--color--brand--accent--default: var(--pf-t--global--color--brand--default)"
+            in block
+        )
+        assert "pf-v6-theme-dark" not in block
+        assert "flydocs-palette-flydocs-dark" not in block
 
 
 class TestSanitizeVariant:

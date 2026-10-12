@@ -17,8 +17,8 @@
   --pf-t--global--text--color--placeholder: #6a6e73;
 }
 
-/* Deeper blues for classic and for flydocs-felt. Red Felt
-   (flydocs-variant-felt) keeps PatternFly accent tokens. */
+/* Deeper link and brand blues for classic dark mode, and for blue Felt
+   in dark mode. Red Felt keeps PatternFly's own dark brand tokens. */
 :root.flydocs-palette-flydocs-dark.pf-v6-theme-dark:not(.flydocs-variant-felt) {
   --pf-t--global--text--color--link--default: #73bcf7;
   --pf-t--global--text--color--link--hover: #2b9af3;
@@ -34,10 +34,26 @@
   --flydocs-on-accent: var(--pf-t--global--text--color--on-brand--default);
 }
 
+/* Red Felt. PatternFly's felt class remaps accent tokens to red. */
 :root.flydocs-variant-felt {
   --flydocs-accent: var(--pf-t--global--color--brand--accent--default);
   --flydocs-accent-hover: var(--pf-t--global--color--brand--accent--hover);
   --flydocs-on-accent: var(--pf-t--global--text--color--on-brand--accent--default);
+}
+
+/* Blue Felt. The felt class still remaps accent tokens to red, in light
+   and in dark, whether or not flydocs-dark is set. Put those tokens back
+   on the blue brand color. */
+:root.flydocs-variant-flydocs-felt {
+  --pf-t--global--color--brand--accent--default: var(--pf-t--global--color--brand--default);
+  --pf-t--global--color--brand--accent--hover: var(--pf-t--global--color--brand--hover);
+  --pf-t--global--color--brand--accent--clicked: var(--pf-t--global--color--brand--clicked);
+  --pf-t--global--border--color--brand--accent--default: var(--pf-t--global--color--brand--default);
+  --pf-t--global--border--color--brand--accent--hover: var(--pf-t--global--color--brand--hover);
+  --pf-t--global--border--color--brand--accent--clicked: var(--pf-t--global--color--brand--clicked);
+  --flydocs-accent: var(--pf-t--global--color--brand--default);
+  --flydocs-accent-hover: var(--pf-t--global--color--brand--hover);
+  --flydocs-on-accent: var(--pf-t--global--text--color--on-brand--default);
 }
 
 :root.pf-v6-theme-felt .flydocs-masthead {
