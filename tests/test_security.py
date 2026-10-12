@@ -144,13 +144,16 @@ class TestPaletteValidation:
 
 class TestVariantValidation:
     def test_rejects_injection(self):
-        assert _sanitize_variant('felt" onload="alert(1)') == "default"
+        assert _sanitize_variant('felt" onload="alert(1)') == "felt"
 
     def test_rejects_unknown(self):
-        assert _sanitize_variant("glass") == "default"
+        assert _sanitize_variant("glass") == "felt"
 
     def test_allows_felt(self):
         assert _sanitize_variant("felt") == "felt"
+
+    def test_legacy_default_is_classic(self):
+        assert _sanitize_variant("default") == "flydocs-classic"
 
 
 class TestPathTraversal:

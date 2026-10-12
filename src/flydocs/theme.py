@@ -16,7 +16,8 @@ _env = Environment(
 )
 
 _PALETTE_RE = re.compile(r"^[a-z0-9-]+$")
-_VARIANTS = frozenset({"default", "felt"})
+_VARIANTS = frozenset({"felt", "flydocs-felt", "flydocs-classic"})
+_VARIANT_ALIASES = {"default": "flydocs-classic"}
 
 
 def _sanitize_palette(palette: str) -> str:
@@ -27,25 +28,25 @@ def _sanitize_palette(palette: str) -> str:
 
 
 def _sanitize_variant(variant: str) -> str:
-    """Allow only known PatternFly theme variants."""
+    """Allow Felt, blue Felt, and classic. Unknown values fall back to Felt."""
+    variant = _VARIANT_ALIASES.get(variant, variant)
     if variant in _VARIANTS:
         return variant
-    return "default"
+    return "felt"
 
 
-def resolve_html_classes(mode: str, palette: str, variant: str = "default") -> str:
+def resolve_html_classes(mode: str, palette: str, variant: str = "felt") -> str:
     """Return the HTML element class string for theme mode, palette, and variant."""
     palette = _sanitize_palette(palette)
     variant = _sanitize_variant(variant)
     classes = []
     if mode == "dark":
         classes.append("pf-v6-theme-dark")
-    if variant == "felt":
+    if variant in ("felt", "flydocs-felt"):
         classes.append("pf-v6-theme-felt")
+    classes.append(f"flydocs-variant-{variant}")
     if palette != "default":
         classes.append(f"flydocs-palette-{palette}")
-    if not classes:
-        return ""
     return f' class="{" ".join(classes)}"'
 
 

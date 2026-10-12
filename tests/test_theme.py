@@ -39,8 +39,15 @@ class TestResolveHtmlClasses:
         assert "pf-v6-theme-dark" in result
 
     def test_light_mode(self):
+        result = resolve_html_classes("light", "default", "flydocs-classic")
+        assert "pf-v6-theme-dark" not in result
+        assert "pf-v6-theme-felt" not in result
+        assert "flydocs-variant-flydocs-classic" in result
+
+    def test_light_defaults_to_felt(self):
         result = resolve_html_classes("light", "default")
-        assert result == ""
+        assert "pf-v6-theme-felt" in result
+        assert "flydocs-variant-felt" in result
 
     def test_dark_with_palette(self):
         result = resolve_html_classes("dark", "flydocs-dark")
@@ -55,7 +62,15 @@ class TestResolveHtmlClasses:
     def test_felt_variant(self):
         result = resolve_html_classes("light", "default", "felt")
         assert "pf-v6-theme-felt" in result
+        assert "flydocs-variant-felt" in result
         assert "pf-v6-theme-dark" not in result
+
+    def test_flydocs_felt_is_blue_felt(self):
+        result = resolve_html_classes("light", "default", "flydocs-felt")
+        classes = result.split('"')[1].split()
+        assert "pf-v6-theme-felt" in classes
+        assert "flydocs-variant-flydocs-felt" in classes
+        assert "flydocs-variant-felt" not in classes
 
     def test_felt_with_dark_and_palette(self):
         result = resolve_html_classes("dark", "flydocs-dark", "felt")
@@ -63,26 +78,39 @@ class TestResolveHtmlClasses:
         assert "pf-v6-theme-felt" in result
         assert "flydocs-palette-flydocs-dark" in result
 
-    def test_default_variant_omits_felt(self):
-        result = resolve_html_classes("dark", "default", "default")
+    def test_classic_omits_felt_token_class(self):
+        result = resolve_html_classes("dark", "default", "flydocs-classic")
         assert "pf-v6-theme-felt" not in result
+        assert "flydocs-variant-flydocs-classic" in result
 
-    def test_invalid_variant_falls_back(self):
+    def test_legacy_default_is_classic(self):
+        result = resolve_html_classes("light", "default", "default")
+        assert "pf-v6-theme-felt" not in result
+        assert "flydocs-variant-flydocs-classic" in result
+
+    def test_invalid_variant_falls_back_to_felt(self):
         result = resolve_html_classes("light", "default", "not-a-theme")
-        assert result == ""
+        assert "pf-v6-theme-felt" in result
+        assert "flydocs-variant-felt" in result
 
 
 class TestSanitizeVariant:
     def test_felt(self):
         assert _sanitize_variant("felt") == "felt"
 
-    def test_default(self):
-        assert _sanitize_variant("default") == "default"
+    def test_flydocs_felt(self):
+        assert _sanitize_variant("flydocs-felt") == "flydocs-felt"
 
-    def test_invalid_falls_back(self):
-        assert _sanitize_variant("glass") == "default"
-        assert _sanitize_variant('felt" onload="alert(1)') == "default"
-        assert _sanitize_variant("Felt") == "default"
+    def test_classic(self):
+        assert _sanitize_variant("flydocs-classic") == "flydocs-classic"
+
+    def test_legacy_default_is_classic(self):
+        assert _sanitize_variant("default") == "flydocs-classic"
+
+    def test_invalid_falls_back_to_felt(self):
+        assert _sanitize_variant("glass") == "felt"
+        assert _sanitize_variant('felt" onload="alert(1)') == "felt"
+        assert _sanitize_variant("Felt") == "felt"
 
 
 class TestBuildBannerHtml:
@@ -156,13 +184,27 @@ class TestRenderPage:
         config = Config(name="Test", theme=ThemeConfig(variant="felt"))
         html = render_page("", "T", "", "", "", config)
         assert "pf-v6-theme-felt" in html
+        assert "flydocs-variant-felt" in html
         assert 'data-variant="felt"' in html
 
-    def test_default_variant_omits_felt_class(self):
+    def test_unset_variant_is_felt(self):
         config = Config(name="Test")
         html = render_page("", "T", "", "", "", config)
+        assert "pf-v6-theme-felt" in html
+        assert 'data-variant="felt"' in html
+
+    def test_classic_omits_felt_class(self):
+        config = Config(name="Test", theme=ThemeConfig(variant="flydocs-classic"))
+        html = render_page("", "T", "", "", "", config)
         assert "pf-v6-theme-felt" not in html
-        assert 'data-variant="default"' in html
+        assert 'data-variant="flydocs-classic"' in html
+
+    def test_flydocs_felt_rendered(self):
+        config = Config(name="Test", theme=ThemeConfig(variant="flydocs-felt"))
+        html = render_page("", "T", "", "", "", config)
+        assert "pf-v6-theme-felt" in html
+        assert "flydocs-variant-flydocs-felt" in html
+        assert 'data-variant="flydocs-felt"' in html
 
     def test_github_url_rendered(self):
         config = Config(name="Test", github_url="https://github.com/test/repo")

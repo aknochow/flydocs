@@ -13,8 +13,13 @@
     var paletteClass =
       palette !== "default" ? "flydocs-palette-" + palette : "";
     var variant =
-      document.documentElement.getAttribute("data-variant") || "default";
-    var variantClass = variant === "felt" ? "pf-v6-theme-felt" : "";
+      document.documentElement.getAttribute("data-variant") || "felt";
+    if (variant === "default") variant = "flydocs-classic";
+    var variantClass =
+      variant === "felt" || variant === "flydocs-felt"
+        ? "pf-v6-theme-felt"
+        : "";
+    var variantNameClass = "flydocs-variant-" + variant;
     var schemeIcons = { auto: "◑", light: "☀", dark: "☾" };
     var btnIcon = btn.querySelector("svg");
 
@@ -28,8 +33,15 @@
         isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
       }
 
+      document.documentElement.classList.remove(
+        "flydocs-variant-felt",
+        "flydocs-variant-flydocs-felt",
+        "flydocs-variant-flydocs-classic"
+      );
+      document.documentElement.classList.add(variantNameClass);
       if (variantClass)
         document.documentElement.classList.add(variantClass);
+      else document.documentElement.classList.remove("pf-v6-theme-felt");
 
       if (isDark) {
         document.documentElement.classList.add("pf-v6-theme-dark");

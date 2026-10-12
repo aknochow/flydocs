@@ -97,20 +97,23 @@ palette = "flydocs-dark"
 Palettes only affect dark mode — light mode uses stock PatternFly
 colors regardless of the palette setting.
 
-When `[theme] variant = "felt"` is set, the `flydocs-dark` palette
-still deepens dark backgrounds, but it leaves brand and link tokens
-alone. Felt does not recolor links. It recolors the accent.
+When `[theme] variant = "felt"` (the default), the `flydocs-dark`
+palette still deepens dark backgrounds, but it leaves brand and
+link tokens alone. Red Felt recolors the accent. It does not
+recolor links. `flydocs-felt` keeps those blue brand tokens and
+only takes Felt's shape.
 
 ## Project Felt
 
 PatternFly's Project Felt theme is a Red Hat–aligned variant: red
-brand accents and pill-shaped borders on buttons, controls, and
-containers. It is built on the same design tokens as the default
-theme, so enabling it does not require markup changes.
+brand accents and pill-shaped borders on buttons and controls. It
+is built on the same design tokens as classic PatternFly, so
+enabling it does not require markup changes.
 
-Felt is independent of light/dark mode. PatternFly activates it by
-adding `pf-v6-theme-felt` to `<html>`, alongside `pf-v6-theme-dark`
-when dark mode is on.
+Felt is independent of light/dark mode. PatternFly activates the
+red theme by adding `pf-v6-theme-felt` to `<html>`, alongside
+`pf-v6-theme-dark` when dark mode is on. FlyDocs also adds
+`flydocs-variant-felt`.
 
 Set via `[theme] variant` in `flydocs.toml`:
 
@@ -119,18 +122,21 @@ Set via `[theme] variant` in `flydocs.toml`:
 variant = "felt"
 ```
 
-| Variant | HTML class | Description |
-|---------|------------|-------------|
-| `default` | none | Stock PatternFly (blue accents, square controls). This is the generator default. |
-| `felt` | `pf-v6-theme-felt` | Project Felt (red accents, pill-shaped controls). |
+| Variant | HTML classes | Description |
+|---------|--------------|-------------|
+| `felt` | `pf-v6-theme-felt flydocs-variant-felt` | Project Felt. Red accents, pill-shaped controls. This is the default. |
+| `flydocs-felt` | `pf-v6-theme-felt flydocs-variant-flydocs-felt` | Same Felt shapes, with PatternFly blue instead of red. |
+| `flydocs-classic` | `flydocs-variant-flydocs-classic` | Previous FlyDocs theme. Square controls, blue accents. `default` is accepted as an alias. |
 
-FlyDocs custom chrome uses PatternFly radius tokens, so controls
-become pills under Felt. Containers (code blocks, the theme panel,
-the table of contents) use the pill radius too. The masthead rule,
-project name, current nav item, selected color-scheme button, and
-page title underline use the brand-accent token, which is Red Hat
-red under Felt and stays PatternFly blue on the default variant.
-Body links stay on the link token.
+FlyDocs custom chrome uses PatternFly's control radius, so buttons,
+search, and nav chips become pills under Felt. Code blocks, the
+theme panel, and the table of contents use the medium radius.
+A pill radius on those wide boxes turns them into capsules. The
+masthead rule, project name, current nav item, selected
+color-scheme button, and page title underline use the accent
+color: Red Hat red for `felt`, PatternFly blue for `flydocs-felt`.
+Body links stay on the link token. `flydocs-classic` does not use
+that accent chrome.
 
 Glass and high-contrast PatternFly modes are vendored in
 `patternfly-base.css` but are not yet exposed as FlyDocs config

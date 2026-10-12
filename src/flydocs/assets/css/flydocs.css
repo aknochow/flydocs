@@ -17,55 +17,60 @@
   --pf-t--global--text--color--placeholder: #6a6e73;
 }
 
-/* Brand/link blues stay on the default PatternFly palette. Felt
-   keeps those tokens and paints chrome with brand-accent instead. */
-:root.flydocs-palette-flydocs-dark.pf-v6-theme-dark:not(.pf-v6-theme-felt) {
+/* Deeper blues for classic and for flydocs-felt. Red Felt
+   (flydocs-variant-felt) keeps PatternFly accent tokens. */
+:root.flydocs-palette-flydocs-dark.pf-v6-theme-dark:not(.flydocs-variant-felt) {
   --pf-t--global--text--color--link--default: #73bcf7;
   --pf-t--global--text--color--link--hover: #2b9af3;
   --pf-t--global--color--brand--default: #0066cc;
 }
 
-/* Project Felt. PatternFly only remaps accent color and control radius.
-   FlyDocs chrome opts into those tokens so the red accent and pill
-   containers show up. Body links stay on the link token (still blue). */
+/* Felt shapes. Controls use PatternFly's pill radius. Containers stay
+   at the medium radius — a pill radius on a wide code block becomes a capsule. */
 :root.pf-v6-theme-felt {
-  --flydocs-radius-container: var(--pf-t--global--border--radius--pill);
+  --flydocs-radius-container: var(--pf-t--global--border--radius--medium);
+  --flydocs-accent: var(--pf-t--global--color--brand--default);
+  --flydocs-accent-hover: var(--pf-t--global--color--brand--hover);
+  --flydocs-on-accent: var(--pf-t--global--text--color--on-brand--default);
+}
+
+:root.flydocs-variant-felt {
+  --flydocs-accent: var(--pf-t--global--color--brand--accent--default);
+  --flydocs-accent-hover: var(--pf-t--global--color--brand--accent--hover);
+  --flydocs-on-accent: var(--pf-t--global--text--color--on-brand--accent--default);
 }
 
 :root.pf-v6-theme-felt .flydocs-masthead {
-  box-shadow: inset 0 -3px 0 var(--pf-t--global--color--brand--accent--default);
+  box-shadow: inset 0 -3px 0 var(--flydocs-accent);
 }
 
 :root.pf-v6-theme-felt .flydocs-brand {
-  color: var(--pf-t--global--color--brand--accent--default);
+  color: var(--flydocs-accent);
 }
 
-:root.pf-v6-theme-felt .flydocs-brand:hover {
-  color: var(--pf-t--global--color--brand--accent--hover);
-}
-
+:root.pf-v6-theme-felt .flydocs-brand:hover,
 :root.pf-v6-theme-felt .flydocs-sidebar-toggle:hover {
-  color: var(--pf-t--global--color--brand--accent--default);
+  color: var(--flydocs-accent-hover);
 }
 
 :root.pf-v6-theme-felt .flydocs-btn-group-item--active,
 :root.pf-v6-theme-felt .flydocs-btn-group-item--active:hover {
-  background-color: var(--pf-t--global--color--brand--accent--default);
-  color: var(--pf-t--global--text--color--on-brand--accent--default);
+  background-color: var(--flydocs-accent);
+  color: var(--flydocs-on-accent);
 }
 
 :root.pf-v6-theme-felt .flydocs-search {
-  --pagefind-ui-primary: var(--pf-t--global--color--brand--accent--default);
+  --pagefind-ui-primary: var(--flydocs-accent);
 }
 
 :root.pf-v6-theme-felt .pf-v6-c-nav__subnav .pf-v6-c-nav__link.pf-m-current {
-  color: var(--pf-t--global--color--brand--accent--default);
-  background-color: color-mix(in srgb, var(--pf-t--global--color--brand--accent--default) 14%, transparent);
-  border-left-color: var(--pf-t--global--color--brand--accent--default);
+  color: var(--flydocs-accent);
+  background-color: color-mix(in srgb, var(--flydocs-accent) 14%, transparent);
+  border-left-color: var(--flydocs-accent);
 }
 
 :root.pf-v6-theme-felt .pf-v6-c-content h1 {
-  border-bottom-color: var(--pf-t--global--color--brand--accent--default);
+  border-bottom-color: var(--flydocs-accent);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
