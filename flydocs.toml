@@ -8,6 +8,7 @@ site_dir = "public"
 
 [theme]
 mode = "auto"
+variant = "felt"
 tagline = "Static documentation sites with PatternFly"
 
 [readme]

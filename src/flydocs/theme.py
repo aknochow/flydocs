@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import html as html_module
+import logging
 import re
 
 from jinja2 import Environment, PackageLoader
@@ -10,12 +11,16 @@ from markupsafe import Markup
 
 from flydocs.config import Config
 
+logger = logging.getLogger(__name__)
+
 _env = Environment(
     loader=PackageLoader("flydocs", "templates"),
     autoescape=True,
 )
 
 _PALETTE_RE = re.compile(r"^[a-z0-9-]+$")
+_VARIANTS = frozenset({"felt", "flydocs-felt", "flydocs-classic"})
+_VARIANT_ALIASES = {"default": "flydocs-classic"}
 
 
 def _sanitize_palette(palette: str) -> str:
@@ -25,16 +30,30 @@ def _sanitize_palette(palette: str) -> str:
     return "default"
 
 
-def resolve_html_classes(mode: str, palette: str) -> str:
-    """Return the HTML element class string for theme mode and palette."""
+def _sanitize_variant(variant: str) -> str:
+    """Allow Felt, blue Felt, and classic. Unknown values fall back to Felt."""
+    normalized = _VARIANT_ALIASES.get(variant, variant)
+    if normalized in _VARIANTS:
+        return normalized
+    logger.warning(
+        "Unknown theme variant %r; using felt. Expected felt, flydocs-felt, or flydocs-classic.",
+        variant,
+    )
+    return "felt"
+
+
+def resolve_html_classes(mode: str, palette: str, variant: str = "felt") -> str:
+    """Return the HTML element class string for theme mode, palette, and variant."""
     palette = _sanitize_palette(palette)
+    variant = _sanitize_variant(variant)
     classes = []
     if mode == "dark":
         classes.append("pf-v6-theme-dark")
+    if variant in ("felt", "flydocs-felt"):
+        classes.append("pf-v6-theme-felt")
+    classes.append(f"flydocs-variant-{variant}")
     if palette != "default":
         classes.append(f"flydocs-palette-{palette}")
-    if not classes:
-        return ""
     return f' class="{" ".join(classes)}"'
 
 
@@ -113,10 +132,11 @@ def render_page(
     """Render a complete HTML page using Jinja2 templates."""
     mode = config.theme.mode
     palette = _sanitize_palette(config.theme.palette)
+    variant = _sanitize_variant(config.theme.variant)
     if mode == "auto":
-        theme_class = resolve_html_classes("", palette)
+        theme_class = resolve_html_classes("", palette, variant)
     else:
-        theme_class = resolve_html_classes(mode, palette)
+        theme_class = resolve_html_classes(mode, palette, variant)
 
     slug = title != config.name
     tab_title = f"{title} · {config.name}" if slug else config.name
@@ -134,6 +154,7 @@ def render_page(
         theme_class=Markup(theme_class),
         theme_mode=mode,
         palette=palette,
+        variant=variant,
         banner_html=Markup(build_banner_html(config)),
         google_fonts=config.theme.google_fonts,
         project_name=config.name,

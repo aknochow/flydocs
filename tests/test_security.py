@@ -10,7 +10,7 @@ from flydocs.config import Badge, BannerConfig, Config, ThemeConfig
 from flydocs.frontmatter import parse_frontmatter
 from flydocs.linker import rewrite_links
 from flydocs.nav import build_sidebar
-from flydocs.theme import _sanitize_palette, build_banner_html, render_page
+from flydocs.theme import _sanitize_palette, _sanitize_variant, build_banner_html, render_page
 
 
 class TestXssNavSidebar:
@@ -140,6 +140,20 @@ class TestPaletteValidation:
 
     def test_allows_numbers(self):
         assert _sanitize_palette("theme42") == "theme42"
+
+
+class TestVariantValidation:
+    def test_rejects_injection(self):
+        assert _sanitize_variant('felt" onload="alert(1)') == "felt"
+
+    def test_rejects_unknown(self):
+        assert _sanitize_variant("glass") == "felt"
+
+    def test_allows_felt(self):
+        assert _sanitize_variant("felt") == "felt"
+
+    def test_legacy_default_is_classic(self):
+        assert _sanitize_variant("default") == "flydocs-classic"
 
 
 class TestPathTraversal:

@@ -13,6 +13,7 @@ all work out of the box.
 
 - **PatternFly** — Red Hat's open source design system, CSS-only
 - **Dark / Light / Auto** — respects system preference with manual toggle
+- **Project Felt** — default theme, with red accents and pill-shaped controls. `flydocs-felt` keeps the shapes in blue. `flydocs-classic` is the previous square theme.
 - **OKF frontmatter** — optional structured metadata for auto-nav and search
 - **Plain markdown works** — no frontmatter required to get a site
 - **Badges** — define once in config, reference anywhere in docs
