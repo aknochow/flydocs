@@ -177,12 +177,9 @@ def build_site(config: Config, clean: bool = False) -> None:
         shutil.copy2(config.theme.favicon, dst)
 
     if config.readme.enabled:
-        from flydocs.readme import generate_readme
+        from flydocs.readme import publish_readme
 
-        readme_content = generate_readme(config)
-        with open(config.readme.output, "w") as f:
-            f.write(readme_content)
-        print(f"  + {config.readme.output}")
+        print(f"  + {publish_readme(config)}")
 
     _run_pagefind(config.site_dir)
 

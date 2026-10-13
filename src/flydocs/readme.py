@@ -1,13 +1,118 @@
-"""Generate README.md from docs/index.md."""
+"""Generate README.md from docs/index.md, or leave an index symlink alone."""
 
 from __future__ import annotations
 
 import os
 import re
+from dataclasses import dataclass
+from pathlib import Path
 
 from flydocs.badges import badges_markdown, expand_inline_badges
 from flydocs.config import Config
 from flydocs.frontmatter import parse_frontmatter
+
+
+@dataclass(frozen=True)
+class ReadmeSymlink:
+    """How the configured README path relates to docs/index.md."""
+
+    state: str
+    message: str = ""
+
+
+def _docs_dir(config: Config) -> Path:
+    docs = Path(config.docs_dir)
+    if not docs.is_absolute():
+        docs = Path.cwd() / docs
+    return docs
+
+
+def _repo_root(config: Config) -> Path:
+    """Directory that contains docs_dir. Symlinks may not leave it."""
+    return _docs_dir(config).resolve().parent
+
+
+def _output_path(config: Config, output: str | None) -> Path:
+    path = Path(output or config.readme.output)
+    if not path.is_absolute():
+        path = Path.cwd() / path
+    return path
+
+
+def _index_path(config: Config) -> Path:
+    return _docs_dir(config) / "index.md"
+
+
+def _resolve_symlink(path: Path, root: Path) -> Path:
+    """Follow a symlink chain. Reject loops and targets outside root."""
+    seen: set[str] = set()
+    current = path
+    while current.is_symlink():
+        key = str(current.absolute())
+        if key in seen or len(seen) > 16:
+            raise ValueError(f"{path.name} is a symlink loop")
+        seen.add(key)
+        raw = os.readlink(current)
+        nxt = Path(raw)
+        if not nxt.is_absolute():
+            nxt = current.parent / nxt
+        current = Path(os.path.normpath(nxt))
+    try:
+        resolved = current.resolve(strict=True)
+    except OSError:
+        raise ValueError(f"{path.name} symlink target does not exist ({current})") from None
+    root_resolved = root.resolve()
+    if not resolved.is_relative_to(root_resolved):
+        raise ValueError(f"{path.name} symlink leaves the repository ({resolved})")
+    return resolved
+
+
+def inspect_readme_symlink(config: Config, output: str | None = None) -> ReadmeSymlink:
+    """Classify the README path.
+
+    ``ok`` is a symlink to ``docs/index.md``. ``bad`` is a symlink that loops,
+    leaves the repository, or points somewhere else. ``plain`` is a regular
+    file or a path that does not exist yet.
+    """
+    path = _output_path(config, output)
+    if not path.is_symlink():
+        return ReadmeSymlink("plain")
+    root = _repo_root(config)
+    try:
+        resolved = _resolve_symlink(path, root)
+    except ValueError as exc:
+        return ReadmeSymlink("bad", str(exc))
+    index = _index_path(config).resolve()
+    if resolved != index:
+        actual = os.path.relpath(resolved, root)
+        expected = os.path.relpath(index, root)
+        return ReadmeSymlink(
+            "bad",
+            f"{path.name} symlink points at {actual}, expected {expected}",
+        )
+    shown = output or config.readme.output
+    return ReadmeSymlink(
+        "ok",
+        f"{shown} is a symlink to {config.docs_dir}/index.md; leaving it unchanged",
+    )
+
+
+def publish_readme(config: Config, output: str | None = None, dry_run: bool = False) -> str:
+    """Write a generated README, or leave a valid index symlink unchanged.
+
+    A bad symlink is an error. Generation does not replace it.
+    """
+    status = inspect_readme_symlink(config, output)
+    if status.state == "bad":
+        raise SystemExit(f"Error: {status.message}")
+    if status.state == "ok":
+        return status.message
+    content = generate_readme(config)
+    if dry_run:
+        return content
+    dest = _output_path(config, output)
+    dest.write_text(content)
+    return f"Generated {output or config.readme.output}"
 
 
 def generate_readme(config: Config) -> str:

@@ -67,6 +67,12 @@ def lint(config: Config, strict: bool = False, today: date | None = None) -> int
 
     md_files = collect_md_files(config.docs_dir)
 
+    from flydocs.readme import inspect_readme_symlink
+
+    readme_link = inspect_readme_symlink(config)
+    if readme_link.state == "bad":
+        errors.append(readme_link.message)
+
     for md_rel in md_files:
         with open(os.path.join(config.docs_dir, md_rel)) as f:
             raw = f.read()

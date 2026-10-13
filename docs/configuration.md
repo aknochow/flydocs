@@ -90,10 +90,54 @@ url = "https://github.com/example/releases"
 
 ## `[readme]`
 
-Optionally generate `README.md` from `docs/index.md` during build.
-The generated README strips OKF frontmatter, expands inline badges,
-rewrites doc links to point at the docs site URL, and appends a
-footer attribution.
+`docs/index.md` is the only copy of the project overview. There are
+two ways to surface it as `README.md`.
+
+### Symlink
+
+Commit `README.md` as a symlink to the index. Git stores that as
+mode `120000`, not as a second file.
+
+```bash
+ln -s docs/index.md README.md
+```
+
+`docs/index.md` keeps its OKF frontmatter. `flydocs build` and
+`flydocs preview` follow the symlink, parse that frontmatter, and
+leave it out of the HTML, the same way they do for every other page.
+Relative links in the index stay docs-relative (`getting-started.md`).
+FlyDocs does not rewrite them to site URLs inside the source file.
+
+`flydocs readme`, and `flydocs build` when `[readme] enabled = true`,
+do not replace this symlink. Generation is a no-op and prints that
+the symlink was left unchanged. `flydocs lint` accepts the layout.
+A symlink loop, a symlink that leaves the repository, or a
+`README.md` that points at anything other than `docs/index.md` is
+an error. FlyDocs does not fall back to generating a second README
+in those cases.
+
+Checked on 2026-10-13 against `aknochow/flydocs`, with `README.md`
+symlinked to `docs/index.md` on a branch and rendered by GitHub's
+repository file list:
+
+- Frontmatter is visible. GitHub does not parse OKF. It renders the
+  `---` block as a table (`type`, `title`, `description`, and the
+  other fields). The HTML view still hides that block. Do not strip
+  the frontmatter from `docs/index.md` to hide it on GitHub.
+- Links are resolved from the repository root, where the symlink
+  sits, not from `docs/`. A docs-relative link `okf.md` was rendered
+  as `okf.md` at the root, not `docs/okf.md`. The same happened for
+  `configuration.md`. The symlink layout is not sufficient for those
+  links on GitHub. That needs a follow-up. Do not fix it by writing
+  a second README.
+
+### Generated copy
+
+Leave `[readme] enabled = true` when `README.md` is a normal file.
+`flydocs build` then writes a second copy: OKF frontmatter removed,
+inline badges expanded, doc links rewritten to the site URL, and a
+footer attribution appended. `flydocs readme` does the same at any
+time. This copy can drift from `docs/index.md`.
 
 ```toml
 [readme]
@@ -103,15 +147,11 @@ output = "README.md"
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| `enabled` | bool | `false` | Generate README during `flydocs build`. |
+| `enabled` | bool | `false` | Generate README during `flydocs build` when the output path is not a symlink to the docs index. |
 | `output` | string | `"README.md"` | Output file path for the generated README. |
 
-When enabled, `flydocs build` auto-generates the README. You can
-also run `flydocs readme` manually at any time, regardless of this
-setting.
-
-This is optional — projects that maintain their README independently
-can leave this disabled.
+Projects that maintain `README.md` independently can leave this
+disabled.
 
 ## `[[badges]]`
 

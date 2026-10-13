@@ -83,7 +83,7 @@ See the [OKF Frontmatter](https://aknochow.github.io/flydocs/okf/) reference for
 | `flydocs search QUERY` | Search docs by metadata |
 | `flydocs init PATH` | Scaffold a new doc with OKF frontmatter |
 | `flydocs badges` | Print badge markdown for README |
-| `flydocs readme` | Generate README.md from docs/index.md |
+| `flydocs readme` | Generate README.md from docs/index.md, or leave a symlink to that index unchanged |
 | `flydocs okf preview` | Preview OKF-enhanced build *(planned, not yet implemented)* |
 | `flydocs okf init` | Add OKF frontmatter to existing docs *(planned, not yet implemented)* |
 
