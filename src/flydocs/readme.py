@@ -53,7 +53,7 @@ def _resolve_symlink(path: Path, root: Path) -> Path:
     try:
         while current.is_symlink():
             key = str(current.absolute())
-            if key in seen or len(seen) > 16:
+            if key in seen:
                 raise ValueError(f"{path.name} is a symlink loop")
             seen.add(key)
             raw = os.readlink(current)
@@ -139,18 +139,20 @@ def _write_readme_no_follow(dest: Path, content: str) -> None:
     if info is not None and not stat.S_ISLNK(info.st_mode):
         mode = stat.S_IMODE(info.st_mode)
     fd, tmp_name = tempfile.mkstemp(prefix=f".{dest.name}.", suffix=".tmp", dir=directory)
+    tmp_path = Path(tmp_name)
     try:
         with os.fdopen(fd, "w") as handle:
             handle.write(content)
             handle.flush()
             os.fchmod(handle.fileno(), mode)
-        os.replace(tmp_name, dest)
-    except Exception:
-        try:
-            os.unlink(tmp_name)
-        except OSError:
-            pass
-        raise
+        os.replace(tmp_path, dest)
+        tmp_path = None
+    finally:
+        if tmp_path is not None:
+            try:
+                tmp_path.unlink()
+            except OSError:
+                pass
 
 
 def generate_readme(config: Config) -> str:

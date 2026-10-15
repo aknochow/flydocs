@@ -159,6 +159,17 @@ class TestReadmeSymlink:
         with pytest.raises(SystemExit, match="leaves the repository"):
             publish_readme(config)
 
+    def test_long_symlink_chain_to_index_is_ok(self, tmp_path, monkeypatch):
+        config = _project(tmp_path, monkeypatch)
+        target = "docs/index.md"
+        for i in range(20, 0, -1):
+            os.symlink(target, tmp_path / f"l{i}")
+            target = f"l{i}"
+        os.symlink("l1", tmp_path / "README.md")
+        message = publish_readme(config)
+        assert "leaving it unchanged" in message
+        assert os.readlink(tmp_path / "README.md") == "l1"
+
     def test_inspect_plain_file(self, tmp_path, monkeypatch):
         config = _project(tmp_path, monkeypatch)
         assert inspect_readme_symlink(config).state == "plain"
