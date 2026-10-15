@@ -5,6 +5,7 @@ from __future__ import annotations
 import errno
 import os
 import re
+import stat
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
@@ -123,12 +124,26 @@ def publish_readme(config: Config, output: str | None = None, dry_run: bool = Fa
 
 
 def _write_readme_no_follow(dest: Path, content: str) -> None:
-    """Replace dest by name. A symlink at that path is replaced, not followed."""
+    """Replace dest by name. A symlink at that path is replaced, not followed.
+
+    The temporary file is created mode 0600. Restore the previous mode of a
+    regular file, or 0644 when the path is new or a symlink, before replacing
+    the name.
+    """
     directory = dest.parent
+    mode = 0o644
+    try:
+        info = dest.lstat()
+    except OSError:
+        info = None
+    if info is not None and not stat.S_ISLNK(info.st_mode):
+        mode = stat.S_IMODE(info.st_mode)
     fd, tmp_name = tempfile.mkstemp(prefix=f".{dest.name}.", suffix=".tmp", dir=directory)
     try:
         with os.fdopen(fd, "w") as handle:
             handle.write(content)
+            handle.flush()
+            os.fchmod(handle.fileno(), mode)
         os.replace(tmp_name, dest)
     except Exception:
         try:

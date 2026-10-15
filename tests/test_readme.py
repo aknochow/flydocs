@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import stat
 
 import pytest
 
@@ -178,3 +179,20 @@ class TestReadmeSymlink:
         assert secret.read_text() == "keep"
         assert dest.read_text() == "generated\n"
         assert not dest.is_symlink()
+        assert stat.S_IMODE(dest.stat().st_mode) == 0o644
+
+    def test_generated_readme_keeps_existing_mode(self, tmp_path, monkeypatch):
+        config = _project(tmp_path, monkeypatch)
+        readme = tmp_path / "README.md"
+        readme.write_text("old\n")
+        readme.chmod(0o644)
+        publish_readme(config)
+        assert stat.S_IMODE(readme.stat().st_mode) == 0o644
+
+    def test_new_readme_is_world_readable(self, tmp_path, monkeypatch):
+        _project(tmp_path, monkeypatch)
+        publish_readme(
+            Config(name="T", docs_dir="docs", site_dir="public", readme=ReadmeConfig(enabled=True))
+        )
+        mode = stat.S_IMODE((tmp_path / "README.md").stat().st_mode)
+        assert mode & 0o044 == 0o044
