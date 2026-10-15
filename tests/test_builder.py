@@ -101,3 +101,27 @@ class TestBuildSite:
         assert ">draft<" in html
         assert "flydocs-stale-notice" in html
         assert "Last updated" in html
+
+
+class TestReadmeSymlinkBuild:
+    def test_build_follows_symlink_and_does_not_replace_it(self, tmp_path, monkeypatch):
+        from flydocs.config import ReadmeConfig
+
+        monkeypatch.chdir(tmp_path)
+        docs = tmp_path / "docs"
+        docs.mkdir()
+        (docs / "index.md").write_text(
+            "---\ntype: Guide\ntitle: T\ndescription: D\n---\n# T\n\nWelcome to the test project.\n"
+        )
+        os.symlink("docs/index.md", tmp_path / "README.md")
+        config = Config(
+            name="T",
+            docs_dir="docs",
+            site_dir="public",
+            readme=ReadmeConfig(enabled=True),
+        )
+        build_site(config)
+        assert os.readlink(tmp_path / "README.md") == "docs/index.md"
+        html = (tmp_path / "public" / "index.html").read_text()
+        assert "type: Guide" not in html
+        assert "Welcome to the test project." in html

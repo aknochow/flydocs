@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from datetime import date
 
 from flydocs.config import Config
@@ -164,3 +165,34 @@ class TestLint:
         )
         config = Config(docs_dir=str(docs))
         assert lint(config, strict=True) == 0
+
+
+class TestReadmeSymlinkLint:
+    def _config(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        docs = tmp_path / "docs"
+        docs.mkdir()
+        (docs / "index.md").write_text("---\ntype: Guide\ntitle: T\ndescription: D\n---\n# T\n")
+        return Config(docs_dir="docs")
+
+    def test_accepts_index_symlink(self, tmp_path, monkeypatch):
+        config = self._config(tmp_path, monkeypatch)
+        os.symlink("docs/index.md", tmp_path / "README.md")
+        assert lint(config) == 0
+
+    def test_rejects_wrong_target(self, tmp_path, monkeypatch):
+        config = self._config(tmp_path, monkeypatch)
+        other = tmp_path / "docs" / "other.md"
+        other.write_text("---\ntype: Guide\ntitle: O\ndescription: O\n---\n# O\n")
+        os.symlink("docs/other.md", tmp_path / "README.md")
+        assert lint(config) == 1
+
+    def test_rejects_loop(self, tmp_path, monkeypatch):
+        config = self._config(tmp_path, monkeypatch)
+        os.symlink("README.md", tmp_path / "README.md")
+        assert lint(config) == 1
+
+    def test_regular_readme_is_not_an_error(self, tmp_path, monkeypatch):
+        config = self._config(tmp_path, monkeypatch)
+        (tmp_path / "README.md").write_text("# Hand written\n")
+        assert lint(config) == 0
