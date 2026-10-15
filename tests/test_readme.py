@@ -9,6 +9,7 @@ import pytest
 from flydocs.config import Config, ReadmeConfig
 from flydocs.readme import (
     _rewrite_doc_links,
+    _write_readme_no_follow,
     generate_readme,
     inspect_readme_symlink,
     publish_readme,
@@ -160,3 +161,20 @@ class TestReadmeSymlink:
     def test_inspect_plain_file(self, tmp_path, monkeypatch):
         config = _project(tmp_path, monkeypatch)
         assert inspect_readme_symlink(config).state == "plain"
+
+    def test_directory_symlink_loop_is_an_error(self, tmp_path, monkeypatch):
+        config = _project(tmp_path, monkeypatch)
+        os.symlink("loop", tmp_path / "loop")
+        os.symlink("loop/index.md", tmp_path / "README.md")
+        with pytest.raises(SystemExit, match="symlink loop"):
+            publish_readme(config)
+
+    def test_write_replaces_symlink_instead_of_following_it(self, tmp_path):
+        secret = tmp_path / "secret"
+        secret.write_text("keep")
+        dest = tmp_path / "README.md"
+        os.symlink(secret, dest)
+        _write_readme_no_follow(dest, "generated\n")
+        assert secret.read_text() == "keep"
+        assert dest.read_text() == "generated\n"
+        assert not dest.is_symlink()

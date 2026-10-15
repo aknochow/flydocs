@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import errno
 import os
 import re
+import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -47,19 +49,25 @@ def _resolve_symlink(path: Path, root: Path) -> Path:
     """Follow a symlink chain. Reject loops and targets outside root."""
     seen: set[str] = set()
     current = path
-    while current.is_symlink():
-        key = str(current.absolute())
-        if key in seen or len(seen) > 16:
-            raise ValueError(f"{path.name} is a symlink loop")
-        seen.add(key)
-        raw = os.readlink(current)
-        nxt = Path(raw)
-        if not nxt.is_absolute():
-            nxt = current.parent / nxt
-        current = Path(os.path.normpath(nxt))
     try:
+        while current.is_symlink():
+            key = str(current.absolute())
+            if key in seen or len(seen) > 16:
+                raise ValueError(f"{path.name} is a symlink loop")
+            seen.add(key)
+            raw = os.readlink(current)
+            nxt = Path(raw)
+            if not nxt.is_absolute():
+                nxt = current.parent / nxt
+            current = Path(os.path.normpath(nxt))
         resolved = current.resolve(strict=True)
-    except OSError:
+    except ValueError:
+        raise
+    except RuntimeError:
+        raise ValueError(f"{path.name} is a symlink loop") from None
+    except OSError as exc:
+        if exc.errno == errno.ELOOP:
+            raise ValueError(f"{path.name} is a symlink loop") from None
         raise ValueError(f"{path.name} symlink target does not exist ({current})") from None
     root_resolved = root.resolve()
     if not resolved.is_relative_to(root_resolved):
@@ -110,9 +118,24 @@ def publish_readme(config: Config, output: str | None = None, dry_run: bool = Fa
     content = generate_readme(config)
     if dry_run:
         return content
-    dest = _output_path(config, output)
-    dest.write_text(content)
+    _write_readme_no_follow(_output_path(config, output), content)
     return f"Generated {output or config.readme.output}"
+
+
+def _write_readme_no_follow(dest: Path, content: str) -> None:
+    """Replace dest by name. A symlink at that path is replaced, not followed."""
+    directory = dest.parent
+    fd, tmp_name = tempfile.mkstemp(prefix=f".{dest.name}.", suffix=".tmp", dir=directory)
+    try:
+        with os.fdopen(fd, "w") as handle:
+            handle.write(content)
+        os.replace(tmp_name, dest)
+    except Exception:
+        try:
+            os.unlink(tmp_name)
+        except OSError:
+            pass
+        raise
 
 
 def generate_readme(config: Config) -> str:
