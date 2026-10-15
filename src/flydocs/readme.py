@@ -69,7 +69,9 @@ def _resolve_symlink(path: Path, root: Path) -> Path:
     except OSError as exc:
         if exc.errno == errno.ELOOP:
             raise ValueError(f"{path.name} is a symlink loop") from None
-        raise ValueError(f"{path.name} symlink target does not exist ({current})") from None
+        if exc.errno == errno.ENOENT:
+            raise ValueError(f"{path.name} symlink target does not exist ({current})") from None
+        raise ValueError(f"{path.name} symlink could not be resolved: {exc.strerror}") from None
     root_resolved = root.resolve()
     if not resolved.is_relative_to(root_resolved):
         raise ValueError(f"{path.name} symlink leaves the repository ({resolved})")

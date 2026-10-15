@@ -181,6 +181,20 @@ class TestReadmeSymlink:
         with pytest.raises(SystemExit, match="symlink loop"):
             publish_readme(config)
 
+    def test_unreadable_symlink_reports_the_os_error(self, tmp_path, monkeypatch):
+        config = _project(tmp_path, monkeypatch)
+        blocked = tmp_path / "blocked"
+        blocked.mkdir()
+        (blocked / "index.md").write_text("secret\n")
+        blocked.chmod(0)
+        os.symlink("blocked/index.md", tmp_path / "README.md")
+        try:
+            with pytest.raises(SystemExit, match="could not be resolved") as raised:
+                publish_readme(config)
+            assert "does not exist" not in str(raised.value)
+        finally:
+            blocked.chmod(0o755)
+
     def test_write_replaces_symlink_instead_of_following_it(self, tmp_path):
         secret = tmp_path / "secret"
         secret.write_text("keep")
