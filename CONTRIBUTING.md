@@ -21,8 +21,8 @@ Name the branch correctly before opening its pull request: renaming a branch clo
 
 ## Commits
 
-- Author and committer are `Adam Knochowski <aknochow@redhat.com>`.
-- `Signed-off-by: Adam Knochowski <aknochow@redhat.com>` is the DCO trailer.
+- Author and committer are the person who made the change, using that person's own name and email.
+- `Signed-off-by` uses that same name and email. That is the DCO trailer.
 - AI assistance is `Assisted-by: Provider (model)`, using the tool and the user-facing model that did the work. Example: `Assisted-by: Cursor (Grok 4.7)`. Do not copy an attribution from another session, and do not use an internal model slug.
 - Never add `Co-authored-by:`. It creates a phantom GitHub account.
-- Do not commit as `Cursor Agent <cursoragent@cursor.com>`. Sign the commit with the owner SSH key so GitHub shows it as Verified.
+- Do not commit as the agent identity (`Cursor Agent <cursoragent@cursor.com>`). Sign the commit with the contributor's own key so GitHub shows it as Verified.
