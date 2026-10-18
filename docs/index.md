@@ -92,7 +92,7 @@ See the [OKF Frontmatter](okf.md) reference for the full spec.
 | `flydocs search QUERY` | Search docs by metadata |
 | `flydocs init PATH` | Scaffold a new doc with OKF frontmatter |
 | `flydocs badges` | Print badge markdown for README |
-| `flydocs readme` | Generate README.md from docs/index.md, or leave a symlink to that index unchanged |
+| `flydocs readme` | Write a README entrypoint that links to the docs |
 | `flydocs okf preview` | Preview OKF-enhanced build *(planned, not yet implemented)* |
 | `flydocs okf init` | Add OKF frontmatter to existing docs *(planned, not yet implemented)* |
 

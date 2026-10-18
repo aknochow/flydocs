@@ -59,16 +59,19 @@ class TestGenerateReadme:
     def test_includes_body(self, sample_config):
         content = generate_readme(sample_config)
         assert "Test Project" in content
+        assert "A test project." in content
+        assert "Welcome to the test project." not in content
 
     def test_includes_attribution(self, sample_config):
         content = generate_readme(sample_config)
         assert "Generated from" in content
         assert "flydocs" in content
 
-    def test_rewrites_links(self, sample_config):
+    def test_links_to_docs_without_copying_index_links(self, sample_config):
         content = generate_readme(sample_config)
+        assert "https://example.com/docs/" in content
+        assert "docs/" in content or "index.md" in content
         assert "](okf.md)" not in content
-        assert "example.com" in content or ".md" in content
 
     def test_missing_index_exits(self, tmp_path):
         from flydocs.config import Config
@@ -137,7 +140,8 @@ class TestReadmeSymlink:
         text = (tmp_path / "README.md").read_text()
         assert "type: Guide" not in text
         assert "getting-started.md" not in text
-        assert "example.com/docs/getting-started/" in text
+        assert "https://example.com/docs/" in text
+        assert "docs/index.md" in text
         assert "Generated from" in text
 
     def test_wrong_target_is_an_error(self, tmp_path, monkeypatch):
