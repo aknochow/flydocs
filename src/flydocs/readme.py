@@ -46,6 +46,18 @@ def _index_path(config: Config) -> Path:
     return _docs_dir(config) / "index.md"
 
 
+def _readme_source_href(config: Config, output: str | None) -> str:
+    """Link from the README file to the docs index, relative to that file."""
+    index = Path(config.docs_dir)
+    if not index.is_absolute():
+        index = Path.cwd() / index
+    index = index / "index.md"
+    dest = Path(output or config.readme.output)
+    if not dest.is_absolute():
+        dest = Path.cwd() / dest
+    return Path(os.path.relpath(index, dest.parent)).as_posix()
+
+
 def _resolve_symlink(path: Path, root: Path) -> Path:
     """Follow a symlink chain. Reject loops and targets outside root."""
     seen: set[str] = set()
@@ -118,7 +130,7 @@ def publish_readme(config: Config, output: str | None = None, dry_run: bool = Fa
         raise SystemExit(f"Error: {status.message}")
     if status.state == "ok":
         return status.message
-    content = generate_readme(config)
+    content = generate_readme(config, output)
     if dry_run:
         return content
     _write_readme_no_follow(_output_path(config, output), content)
@@ -157,7 +169,7 @@ def _write_readme_no_follow(dest: Path, content: str) -> None:
                 pass
 
 
-def generate_readme(config: Config) -> str:
+def generate_readme(config: Config, output: str | None = None) -> str:
     """Write a short README that points at the documentation.
 
     The docs index stays the OKF page. The README is a separate entrypoint
@@ -174,7 +186,7 @@ def generate_readme(config: Config) -> str:
     meta, _body = parse_frontmatter(raw)
     title = str(meta.get("title") or config.name)
     description = str(meta.get("description") or config.description or "")
-    docs_index = f"{config.docs_dir}/index.md"
+    docs_index = _readme_source_href(config, output)
     badge_line = badges_markdown(config.badges)
 
     parts = []

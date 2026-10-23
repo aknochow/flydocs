@@ -144,6 +144,18 @@ class TestReadmeSymlink:
         assert "docs/index.md" in text
         assert "Generated from" in text
 
+    def test_source_link_is_relative_to_output_directory(self, tmp_path, monkeypatch):
+        _project(tmp_path, monkeypatch)
+        config = Config(
+            name="T",
+            docs_dir="docs",
+            site_dir="public",
+            readme=ReadmeConfig(enabled=True, output="subdir/README.md"),
+        )
+        content = generate_readme(config, output="subdir/README.md")
+        assert "../docs/index.md" in content
+        assert "](docs/index.md)" not in content
+
     def test_wrong_target_is_an_error(self, tmp_path, monkeypatch):
         config = _project(tmp_path, monkeypatch)
         os.symlink("docs/getting-started.md", "README.md")
