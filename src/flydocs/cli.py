@@ -114,7 +114,7 @@ def badges(config_path):
 @click.option("--output", "-o", default="README.md", help="Output file path.")
 @click.option("--dry-run", is_flag=True, help="Print to stdout instead of writing.")
 def readme(config_path, output, dry_run):
-    """Generate README.md, or leave a symlink to the docs index unchanged."""
+    """Write a README entrypoint to the docs, or leave an index symlink unchanged."""
     from flydocs.readme import publish_readme
 
     config = load_config(config_path)

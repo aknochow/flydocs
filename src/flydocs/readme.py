@@ -1,4 +1,4 @@
-"""Generate README.md from docs/index.md, or leave an index symlink alone."""
+"""Write a README entrypoint from the docs index, or leave an index symlink alone."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
-from flydocs.badges import badges_markdown, expand_inline_badges
+from flydocs.badges import badges_markdown
 from flydocs.config import Config
 from flydocs.frontmatter import parse_frontmatter
 
@@ -44,6 +44,18 @@ def _output_path(config: Config, output: str | None) -> Path:
 
 def _index_path(config: Config) -> Path:
     return _docs_dir(config) / "index.md"
+
+
+def _readme_source_href(config: Config, output: str | None) -> str:
+    """Link from the README file to the docs index, relative to that file."""
+    index = Path(config.docs_dir)
+    if not index.is_absolute():
+        index = Path.cwd() / index
+    index = index / "index.md"
+    dest = Path(output or config.readme.output)
+    if not dest.is_absolute():
+        dest = Path.cwd() / dest
+    return Path(os.path.relpath(index, dest.parent)).as_posix()
 
 
 def _resolve_symlink(path: Path, root: Path) -> Path:
@@ -118,7 +130,7 @@ def publish_readme(config: Config, output: str | None = None, dry_run: bool = Fa
         raise SystemExit(f"Error: {status.message}")
     if status.state == "ok":
         return status.message
-    content = generate_readme(config)
+    content = generate_readme(config, output)
     if dry_run:
         return content
     _write_readme_no_follow(_output_path(config, output), content)
@@ -157,11 +169,12 @@ def _write_readme_no_follow(dest: Path, content: str) -> None:
                 pass
 
 
-def generate_readme(config: Config) -> str:
-    """Generate README content from docs/index.md.
+def generate_readme(config: Config, output: str | None = None) -> str:
+    """Write a short README that points at the documentation.
 
-    Strips OKF frontmatter, prepends badge bar, expands inline badges,
-    and rewrites docs-relative links to point at the docs site URL.
+    The docs index stays the OKF page. The README is a separate entrypoint
+    for the repository home page: title, description, badges, and links.
+    It does not copy the index body.
     """
     index_path = os.path.join(config.docs_dir, "index.md")
     if not os.path.exists(index_path):
@@ -170,20 +183,28 @@ def generate_readme(config: Config) -> str:
     with open(index_path) as f:
         raw = f.read()
 
-    _meta, body = parse_frontmatter(raw)
-
-    body = expand_inline_badges(body, config.badges)
-
-    if config.url:
-        body = _rewrite_doc_links(body, config.url)
-
+    meta, _body = parse_frontmatter(raw)
+    title = str(meta.get("title") or config.name)
+    description = str(meta.get("description") or config.description or "")
+    docs_index = _readme_source_href(config, output)
     badge_line = badges_markdown(config.badges)
 
     parts = []
     if badge_line:
         parts.append(badge_line)
         parts.append("")
-    parts.append(body)
+    parts.append(f"# {title}")
+    parts.append("")
+    if description:
+        parts.append(description)
+        parts.append("")
+    parts.append("## Documentation")
+    parts.append("")
+    if config.url:
+        site = config.url if config.url.endswith("/") else config.url + "/"
+        parts.append(f"The documentation site: [{site}]({site})")
+        parts.append("")
+    parts.append(f"Source: [{docs_index}]({docs_index})")
     parts.append("")
     parts.append("---")
     parts.append("")
